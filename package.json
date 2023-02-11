@@ -1,0 +1,35 @@
+{
+  "name": "github_action_sound",
+  "version": "1.0.0",
+  "description": " sound monitor for Github Action, watching and announcing build status.",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest",
+    "sound": "node ./index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/terryyin/github_action_sound.git"
+  },
+  "keywords": [
+    "github action",
+    "ci monitor",
+    "sound"
+  ],
+  "author": "Terry Yin",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/terryyin/github_action_sound/issues"
+  },
+  "homepage": "https://github.com/terryyin/github_action_sound#readme",
+  "devDependencies": {
+    "@babel/core": "^7.20",
+    "@babel/preset-env": "^7.20",
+    "babel-jest": "^29",
+    "jest": "^29"
+  },
+  "dependencies": {
+    "got": "11.8.6",
+    "jsdom": "21.1.0"
+  }
+}
