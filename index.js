@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 const { exec } = require('child_process');
 const got = require('got');
 const jsdom = require("jsdom");
@@ -87,7 +89,7 @@ class BuildState {
         dictionary.translate(this.status)
       );
     }
-    if (this.status != previousState.status) {
+    if (this.status !== 'queued' && this.status != previousState.status) {
       return (
         dictionary.translate('the_build') + dictionary.translate(this.status)
       );
@@ -100,7 +102,7 @@ class BuildState {
       'queued': BgBlue + FgYellow + Blink,
       'currently running': BgBlue + FgYellow + Blink,
       'completed successfully': BgGreen + FgBlack,
-      'faild': BgRed + FgYellow + Blink,
+      'failed': BgRed + FgYellow + Blink,
     }[this.status];
   }
 }
@@ -127,7 +129,7 @@ const japaneseDictionary = {
         'has been queued.': '準備中。',
         'is currently running.': '運転中。',
         'completed successfully.': '成功しました！',
-        'faild.': '失敗しました！直してください',
+        'failed.': '失敗しました！直してください',
       }[phrase] || ` ${phrase}`
     );
   },
