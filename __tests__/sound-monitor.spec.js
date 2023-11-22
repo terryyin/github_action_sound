@@ -194,3 +194,29 @@ test('found a new status', () => {
     colorCode: undefined,
   });
 });
+
+test('old build comes back again', () => {
+  const state1 = new BuildState(
+    'build1',
+    'is currently running.',
+    'do something'
+  );
+  const state2 = new BuildState(
+    'build2',
+    'completed successfully.',
+    'do something'
+  );
+  const state3 = new BuildState(
+    'build1',
+    'completed successfully.',
+    'do something'
+  );
+
+  const mostRecentUpdate = MostRecentUpdate();
+  mostRecentUpdate(state1);
+  mostRecentUpdate(state2);
+  expect(mostRecentUpdate(state3)).toMatchObject({
+    statement: ``,
+    colorCode: undefined,
+  });
+});

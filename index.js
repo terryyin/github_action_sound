@@ -137,12 +137,19 @@ const githubActionURL = process.argv[process.argv.length - 1];
 
 const MostRecentUpdate = () => {
   var lastBuildState = new BuildState('', '');
+  var previousBuildNames = [];
 
   return (newState) => {
+    if(previousBuildNames.includes(newState.buildName)) {
+      return { statement: '', colorCode: undefined };
+    }
     const result = {
       statement: newState.diffToSentence(lastBuildState, englishDictionary),
       colorCode: newState.colorCode(),
     };
+    if(lastBuildState.buildName != newState.buildName) {
+      previousBuildNames.push(lastBuildState.buildName);
+    }
     lastBuildState = newState;
     return result;
   };
