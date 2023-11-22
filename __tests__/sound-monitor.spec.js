@@ -3,6 +3,7 @@ const {
   buildState,
   BuildState,
   englishDictionary,
+  MostRecentUpdate,
   timer,
 } = require('../index.js');
 
@@ -177,7 +178,13 @@ test('found a new status', () => {
     'completed successfully.',
     'do something'
   );
-  expect(state.diffToSentence(state2, englishDictionary)).toContain(
-    `The build is currently running`
-  );
+  const mostRecentUpdate = MostRecentUpdate();
+  expect(mostRecentUpdate(state)).toMatchObject({
+    statement: `A new build 'do something' is currently running.`,
+    colorCode: undefined,
+  });
+  expect(mostRecentUpdate(state2)).toMatchObject({
+    statement: `The build completed successfully.`,
+    colorCode: undefined,
+  });
 });

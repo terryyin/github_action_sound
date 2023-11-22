@@ -107,8 +107,6 @@ class BuildState {
   }
 }
 
-var lastBuildState = new BuildState('', '');
-
 const englishDictionary = {
   translate: function (phrase) {
     return (
@@ -137,22 +135,37 @@ const japaneseDictionary = {
 
 const githubActionURL = process.argv[process.argv.length - 1];
 
-const timer = setInterval(() => {
+const MostRecentUpdate = () => {
+  var lastBuildState = new BuildState('', '');
+
+  return (newState) => {
+    const result = {
+      statement: newState.diffToSentence(lastBuildState, englishDictionary),
+      colorCode: newState.colorCode(),
+    };
+    lastBuildState = newState;
+    return result;
+  };
+};
+
+const mostRecentUpdate = MostRecentUpdate();
+
+const actionSoundJob = () => {
   buildState(githubActionURL).then(
     (newState) => {
-      say(
-        newState.diffToSentence(lastBuildState, englishDictionary),
-        newState.colorCode()
-      );
-      lastBuildState = newState;
+      const toSay = mostRecentUpdate(newState);
+      say(toSay.statement, toSay.colorCode);
     }
   );
-}, 5000);
+};
+
+const timer = setInterval(actionSoundJob , 5000);
 
 module.exports = {
   buildState,
   BuildState,
   say,
   englishDictionary,
+  MostRecentUpdate,
   timer,
 };
