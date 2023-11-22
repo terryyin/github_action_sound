@@ -162,9 +162,15 @@ test('found a new build', () => {
     'completed successfully.',
     'do something'
   );
-  expect(state.diffToSentence(state2, englishDictionary)).toContain(
-    `A new build 'do something' completed successfully`
-  );
+  const mostRecentUpdate = MostRecentUpdate();
+  expect(mostRecentUpdate(state)).toMatchObject({
+    statement: `A new build 'do something' completed successfully.`,
+    colorCode: undefined,
+  });
+  expect(mostRecentUpdate(state2)).toMatchObject({
+    statement: `A new build 'do something' completed successfully.`,
+    colorCode: undefined,
+  });
 });
 
 test('found a new status', () => {
