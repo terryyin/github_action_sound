@@ -67,7 +67,7 @@ async function buildState(url) {
     const currentBuildElm = dom.window.document.querySelector("[id^='check_suite_']");
     const currentBuild = currentBuildElm.id;
     const currentStatus = currentBuildElm.querySelector('svg').getAttribute('aria-label');
-    const gitLog = currentBuildElm.querySelector('a.Link--primary').textContent;
+    const gitLog = currentBuildElm.querySelector('span.Link--primary').textContent;
     return new BuildState(currentBuild, currentStatus, gitLog);
   } catch (err) {
     console.error(err);

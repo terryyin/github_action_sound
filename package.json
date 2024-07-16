@@ -1,6 +1,6 @@
 {
   "name": "github_action_sound",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": " sound monitor for Github Action, watching and announcing build status.",
   "main": "index.js",
   "scripts": {
@@ -34,5 +34,6 @@
   "dependencies": {
     "got": "11.8.6",
     "jsdom": "21.1.0"
-  }
+  },
+  "packageManager": "yarn@1.22.21+sha1.1959a18351b811cdeedbd484a8f86c3cc3bbaf72"
 }
