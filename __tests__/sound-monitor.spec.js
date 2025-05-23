@@ -22,7 +22,7 @@ const html = `
       </div>
 
       <span class="h4 d-inline-block text-bold lh-condensed mb-1 width-full">
-        <a class="Link--primary css-truncate css-truncate-target" style="min-width: 100%" aria-label="Run 11 of Docker Image CI. trigger build" href="/nerds-odd-e/feature-teams-site/actions/runs/4120919627">trigger build</a>
+        <span class="Link--primary css-truncate css-truncate-target" style="min-width: 100%" aria-label="Run 11 of Docker Image CI. trigger build" href="/nerds-odd-e/feature-teams-site/actions/runs/4120919627">trigger build</a>
       </span>
 
       <span class="d-block text-small color-fg-muted mb-1 mb-md-0">
