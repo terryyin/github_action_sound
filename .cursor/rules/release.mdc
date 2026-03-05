@@ -14,7 +14,7 @@ globs: package.json,CHANGELOG*,.github/workflows/release.yml,README.md
    git push origin v1.0.7
    ```
 2. **CI** (`.github/workflows/release.yml`) runs on tag push: installs deps, runs tests, sets `package.json` version from the tag, publishes to npm.
-3. **Credentials**: Publishing uses the `NPM_TOKEN` repo secret (npm automation token). No need to bump version in `package.json` before tagging—the tag is the source of truth for the release version.
+3. **Credentials**: We use **npm Trusted Publishing** (OIDC)—no `NPM_TOKEN` or long-lived tokens. One-time setup: on [npmjs.com](https://www.npmjs.com/) → package → Settings → Trusted publishing → add GitHub Actions, workflow filename **`release.yml`**. Requires Node 22.14+ in CI (workflow uses Node 24). No need to bump version in `package.json` before tagging—the tag is the source of truth.
 
 ## Conventions
 

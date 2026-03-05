@@ -24,4 +24,4 @@ Releases are published to npm when a new **git tag** is pushed.
    git push origin v1.0.7
    ```
 2. The [Release](.github/workflows/release.yml) workflow runs: tests, then publishes to npm. The version is taken from the tag (no need to bump `package.json` first).
-3. Publishing requires the `NPM_TOKEN` secret in the repo (npm automation token). See the workflow file or Cursor rule `.cursor/rules/release.mdc` for details.
+3. **Publishing uses [npm Trusted Publishing](https://docs.npmjs.com/trusted-publishers)** (OIDC): no long-lived tokens. One-time setup on [npmjs.com](https://www.npmjs.com/) → your package → Settings → Trusted publishing: add GitHub Actions with workflow filename **`release.yml`**. After that you can revoke any `NPM_TOKEN` secret.

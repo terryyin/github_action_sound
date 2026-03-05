@@ -5,12 +5,14 @@ on:
     tags:
       - "v*"
 
+# Required for npm Trusted Publishing (OIDC) – no long-lived tokens
+permissions:
+  contents: read
+  id-token: write
+
 jobs:
   release:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      id-token: write
     steps:
       - uses: actions/checkout@v4
         with:
@@ -28,7 +30,7 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: "20"
+          node-version: "24"
           cache: "pnpm"
           registry-url: "https://registry.npmjs.org"
 
@@ -44,6 +46,4 @@ jobs:
           pnpm version "$VERSION" --no-git-tag-version --allow-same-version
 
       - name: Publish to npm
-        run: pnpm publish --no-git-checks --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: npm publish --access public
