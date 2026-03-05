@@ -1,0 +1,20 @@
+{
+  "$schema": "https://raw.githubusercontent.com/jetify-com/devbox/0.17.0/.schema/devbox.schema.json",
+  "packages": [
+    "pnpm@latest",
+    "nodejs-slim@20.20.0"
+  ],
+  "env": {
+    "DEVBOX_COREPACK_ENABLED": "1"
+  },
+  "shell": {
+    "init_hook": [
+      ". ./set-env.sh"
+    ],
+    "scripts": {
+      "test": [
+        "pnpm jest"
+      ]
+    }
+  }
+}

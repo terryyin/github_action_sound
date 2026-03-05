@@ -128,7 +128,7 @@ afterAll((done) => {
 });
 
 test('get content from github action', async () => {
-  got.get.mockResolvedValue({ body: html });
+  got.mockResolvedValue({ body: html });
   const state = await buildState();
   expect(state).toMatchObject({
     status: 'completed successfully',

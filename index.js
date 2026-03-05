@@ -62,7 +62,7 @@ function say(sentence, colorCode) {
 
 async function buildState(url) {
   try {
-    const resp = await got.get(url);
+    const resp = await got(url);
     const dom = new JSDOM(resp.body);
     const currentBuildElm = dom.window.document.querySelector("[id^='check_suite_']");
     const currentBuild = currentBuildElm.id;
@@ -89,7 +89,7 @@ class BuildState {
         dictionary.translate(this.status)
       );
     }
-    if (this.status !== 'queued' && this.status != previousState.status) {
+    if (this.status !== 'queued: ' && this.status != previousState.status) {
       return (
         dictionary.translate('the_build') + dictionary.translate(this.status)
       );
@@ -99,10 +99,10 @@ class BuildState {
 
   colorCode() {
     return {
-      'queued': BgBlue + FgYellow + Blink,
-      'currently running': BgBlue + FgYellow + Blink,
-      'completed successfully': BgGreen + FgBlack,
-      'failed': BgRed + FgYellow + Blink,
+      'queued: ': BgBlue + FgYellow + Blink,
+      'currently running: ': BgBlue + FgYellow + Blink,
+      'completed successfully: ': BgGreen + FgBlack,
+      'failed: ': BgRed + FgYellow + Blink,
     }[this.status];
   }
 }
@@ -176,3 +176,4 @@ module.exports = {
   MostRecentUpdate,
   timer,
 };
+
