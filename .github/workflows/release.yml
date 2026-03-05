@@ -16,6 +16,14 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Require CHANGELOG entry for release version
+        run: |
+          VERSION="${GITHUB_REF#refs/tags/v}"
+          if ! grep -q "## \[$VERSION\]" CHANGELOG.md; then
+            echo "CHANGELOG.md must contain a section '## [$VERSION]' for this release."
+            exit 1
+          fi
+
       - uses: pnpm/action-setup@v4
 
       - uses: actions/setup-node@v4

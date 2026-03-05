@@ -1,0 +1,23 @@
+---
+description: Release process and version/changelog conventions
+alwaysApply: false
+globs: package.json,CHANGELOG*,.github/workflows/release.yml,README.md
+---
+
+# Release process
+
+## How to release
+
+1. **Tag with a semver tag** (e.g. `v1.0.7`):
+   ```bash
+   git tag v1.0.7
+   git push origin v1.0.7
+   ```
+2. **CI** (`.github/workflows/release.yml`) runs on tag push: installs deps, runs tests, sets `package.json` version from the tag, publishes to npm.
+3. **Credentials**: Publishing uses the `NPM_TOKEN` repo secret (npm automation token). No need to bump version in `package.json` before tagging—the tag is the source of truth for the release version.
+
+## Conventions
+
+- **Version**: Single source of truth is the git tag. The workflow sets `package.json` version from the tag at publish time. Do not duplicate version elsewhere in the repo.
+- **Changelog**: Maintain `CHANGELOG.md` ([Keep a Changelog](https://keepachangelog.com/)). When cutting a release: add a new `## [X.Y.Z]` section under `[Unreleased]` with the changes, then update the compare links at the bottom. Optionally add GitHub Release notes when creating the tag.
+- **Semver**: Use semantic versioning for tags (`vMAJOR.MINOR.PATCH`).
