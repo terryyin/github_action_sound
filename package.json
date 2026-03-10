@@ -4,8 +4,8 @@
   "description": " sound monitor for Github Action, watching and announcing build status.",
   "main": "index.js",
   "engines": {
-    "node": ">=20.20",
-    "pnpm": ">=10.30.3"
+    "node": ">=24.12",
+    "pnpm": ">=10.31"
   },
   "scripts": {
     "preinstall": "npx only-allow pnpm",
@@ -33,7 +33,7 @@
     "@babel/preset-env": "^7.29.0",
     "babel-jest": "^30.2.0",
     "jest": "^30.2.0",
-    "syncpack": "14.0.0"
+    "syncpack": "14.2.0"
   },
   "bin": {
     "github_action_sound": "./index.js"
@@ -42,5 +42,5 @@
     "got": "11.8.6",
     "jsdom": "26.1.0"
   },
-  "packageManager": "pnpm@10.30.3+sha512.c961d1e0a2d8e354ecaa5166b822516668b7f44cb5bd95122d590dd81922f606f5473b6d23ec4a5be05e7fcd18e8488d47d978bbe981872f1145d06e9a740017"
+  "packageManager": "pnpm@10.31.0+sha512.e3927388bfaa8078ceb79b748ffc1e8274e84d75163e67bc22e06c0d3aed43dd153151cbf11d7f8301ff4acb98c68bdc5cadf6989532801ffafe3b3e4a63c268"
 }
