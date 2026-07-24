@@ -1,15 +1,31 @@
 const got = require('got');
 const {
   buildState,
+  buildStates,
   BuildState,
   englishDictionary,
   MostRecentUpdate,
+  InFlightBuildStore,
+  actionSoundJob,
   timer,
   Status,
   normalizeStatus,
 } = require('../index.js');
 
 jest.mock('got');
+
+function suiteRow({ id, ariaLabel, title }) {
+  return `
+    <div id="${id}">
+      <svg aria-label="${ariaLabel}"></svg>
+      <span class="Link--primary">${title}</span>
+    </div>
+  `;
+}
+
+function suitePage(...rows) {
+  return `<html><body>${rows.join('')}</body></html>`;
+}
 
 const html = `
 <div class="Box-row js-socket-channel js-updatable-content" id="check_suite_10845785161" data-channel="eyJjIjoiY2hlY2tfc3VpdGVzOjEwODQ1Nzg1MTYxIiwidCI6MTY3NTgzMjEwOH0=--d66330a43c420e89112639127d93d12d161a708d48d3d73fdf99e185b88d1f96" data-url="/nerds-odd-e/feature-teams-site/actions/workflow-run/10845785161">
@@ -127,6 +143,73 @@ const html = `
 afterAll((done) => {
   clearInterval(timer);
   done();
+});
+
+test('two-suite fan-out: scrape → Map → ordered announce', async () => {
+  const url = 'https://github.com/org/repo/actions';
+  const store = InFlightBuildStore();
+  const announce = jest.fn();
+  const firstPage = suitePage(
+    suiteRow({
+      id: 'check_suite_a',
+      ariaLabel: 'currently running: Run A',
+      title: 'same title',
+    }),
+    suiteRow({
+      id: 'check_suite_b',
+      ariaLabel: 'queued: Run B',
+      title: 'same title',
+    })
+  );
+  const secondPage = suitePage(
+    suiteRow({
+      id: 'check_suite_a',
+      ariaLabel: 'completed successfully: Run A',
+      title: 'title A',
+    }),
+    suiteRow({
+      id: 'check_suite_b',
+      ariaLabel: 'failed: Run B',
+      title: 'title B',
+    })
+  );
+
+  got.mockResolvedValueOnce({ body: firstPage }).mockResolvedValueOnce({
+    body: secondPage,
+  });
+
+  const firstStates = await buildStates(url);
+  expect(firstStates).toEqual([
+    expect.objectContaining({
+      buildName: 'check_suite_a',
+      status: Status.RUNNING,
+      gitLog: 'same title',
+    }),
+    expect.objectContaining({
+      buildName: 'check_suite_b',
+      status: Status.QUEUED,
+      gitLog: 'same title',
+    }),
+  ]);
+
+  got.mockResolvedValueOnce({ body: firstPage }).mockResolvedValueOnce({
+    body: secondPage,
+  });
+  await actionSoundJob(url, announce, store);
+  expect(store.size).toBe(2);
+  expect(store.has('check_suite_a')).toBe(true);
+  expect(store.has('check_suite_b')).toBe(true);
+  expect(announce.mock.calls.map(([statement]) => statement)).toEqual([
+    "A new build 'same title' is currently running.",
+    "A new build 'same title' has been queued.",
+  ]);
+
+  announce.mockClear();
+  await actionSoundJob(url, announce, store);
+  expect(announce.mock.calls.map(([statement]) => statement)).toEqual([
+    "The build 'title A' completed successfully.",
+    "The build 'title B' failed.",
+  ]);
 });
 
 test('buildState returns null when got rejects', async () => {
