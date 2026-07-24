@@ -11,7 +11,7 @@
     "preinstall": "npx only-allow pnpm",
     "lint:deps": "syncpack lint",
     "test": "jest",
-    "sound": "node ./index.js"
+    "sound": "node ./cli.js"
   },
   "repository": {
     "type": "git",
@@ -36,7 +36,7 @@
     "syncpack": "14.2.0"
   },
   "bin": {
-    "github_action_sound": "./index.js"
+    "github_action_sound": "./cli.js"
   },
   "dependencies": {
     "got": "11.8.6",

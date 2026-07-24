@@ -1,11 +1,10 @@
 #!/usr/bin/env node
 
-const { exec } = require('child_process');
 const got = require('got');
 const jsdom = require("jsdom");
 const { JSDOM } = jsdom;
+const { say } = require('./announce');
 
-const Reset = '\x1b[0m';
 const Bright = '\x1b[1m';
 const Dim = '\x1b[2m';
 const Underscore = '\x1b[4m';
@@ -30,35 +29,6 @@ const BgBlue = '\x1b[44m';
 const BgMagenta = '\x1b[45m';
 const BgCyan = '\x1b[46m';
 const BgWhite = '\x1b[47m';
-
-function now() {
-  var currentdate = new Date();
-  return (
-    currentdate.getDate() +
-    '/' +
-    (currentdate.getMonth() + 1) +
-    '/' +
-    currentdate.getFullYear() +
-    '@' +
-    currentdate.getHours() +
-    ':' +
-    currentdate.getMinutes() +
-    ':' +
-    currentdate.getSeconds()
-  );
-}
-
-function say(sentence, colorCode) {
-  if (sentence === '') {
-    return;
-  }
-  console.error(colorCode + now() + ': ' + sentence + Reset);
-  exec('say "' + sentence + '"', (err, _stdout, _stderr) => {
-    if (err) {
-      console.error(err);
-    }
-  });
-}
 
 const Status = Object.freeze({
   QUEUED: 'queued',
@@ -189,8 +159,6 @@ const japaneseDictionary = {
   },
 };
 
-const githubActionURL = process.argv[process.argv.length - 1];
-
 function isInFlight(status) {
   return status === Status.QUEUED || status === Status.RUNNING;
 }
@@ -254,13 +222,7 @@ const InFlightBuildStore = () => {
   };
 };
 
-const inFlightBuildStore = InFlightBuildStore();
-
-const actionSoundJob = async (
-  url = githubActionURL,
-  announce = say,
-  store = inFlightBuildStore
-) => {
+const actionSoundJob = async (url, announce, store) => {
   const states = await buildStates(url);
   if (states == null) return [];
 
@@ -271,8 +233,6 @@ const actionSoundJob = async (
   return announcements;
 };
 
-const timer = setInterval(actionSoundJob , 5000);
-
 module.exports = {
   buildStates,
   BuildState,
@@ -280,7 +240,6 @@ module.exports = {
   englishDictionary,
   InFlightBuildStore,
   actionSoundJob,
-  timer,
   Status,
   normalizeStatus,
 };
