@@ -115,17 +115,20 @@ class BuildState {
   }
 
   diffToSentence(previousState, dictionary) {
+    const statusPhrase = dictionary.translate(this.status);
+    // D-05 / T-01-05: never invent speech for unknown or missing phrases
+    if (this.status === Status.UNKNOWN || statusPhrase === '') {
+      return '';
+    }
     if (this.buildName != previousState.buildName) {
       return (
         dictionary.translate('new_build') +
         `'${this.gitLog}'` +
-        dictionary.translate(this.status)
+        statusPhrase
       );
     }
     if (this.status !== Status.QUEUED && this.status != previousState.status) {
-      return (
-        dictionary.translate('the_build') + dictionary.translate(this.status)
-      );
+      return dictionary.translate('the_build') + statusPhrase;
     }
     return '';
   }
