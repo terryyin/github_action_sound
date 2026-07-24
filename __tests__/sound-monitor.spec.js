@@ -1,10 +1,8 @@
 const got = require('got');
 const {
-  buildState,
   buildStates,
   BuildState,
   englishDictionary,
-  MostRecentUpdate,
   InFlightBuildStore,
   actionSoundJob,
   timer,
@@ -210,102 +208,44 @@ test('two-suite fan-out: scrape → Map → ordered announce', async () => {
   ]);
 });
 
-test('buildState returns null when got rejects', async () => {
+test('buildStates returns null when got rejects', async () => {
   got.mockRejectedValue(new Error('network down'));
-  await expect(buildState('https://github.com/org/repo/actions')).resolves.toBeNull();
+  await expect(
+    buildStates('https://github.com/org/repo/actions')
+  ).resolves.toBeNull();
 });
 
-test('buildState returns null when check_suite missing', async () => {
+test('buildStates returns null when check_suite missing', async () => {
   got.mockResolvedValue({ body: '<html><body>no suites</body></html>' });
-  await expect(buildState('https://github.com/org/repo/actions')).resolves.toBeNull();
+  await expect(
+    buildStates('https://github.com/org/repo/actions')
+  ).resolves.toBeNull();
 });
 
-test('null scrape does not mutate MostRecentUpdate state', async () => {
+test('null scrape does not mutate InFlightBuildStore state', async () => {
+  const store = InFlightBuildStore();
+  const announce = jest.fn();
+  store.apply([new BuildState('check_suite_1', Status.RUNNING, 'seeded')]);
   got.mockRejectedValue(new Error('network down'));
-  const newState = await buildState('https://github.com/org/repo/actions');
-  expect(newState).toBeNull();
-
-  const update = MostRecentUpdate();
-  const updateSpy = jest.fn(update);
-  update(new BuildState('build1', Status.RUNNING, 'do something'));
-
-  // Poll guard (D-01): skip MostRecentUpdate when scrape yields null
-  if (newState != null) {
-    updateSpy(newState);
-  }
-  expect(updateSpy).not.toHaveBeenCalled();
-
-  const next = update(new BuildState('build1', Status.SUCCESS, 'do something'));
-  expect(next.statement).toBe('The build completed successfully.');
-  expect(next.colorCode).toBeDefined();
+  await expect(
+    actionSoundJob('https://github.com/org/repo/actions', announce, store)
+  ).resolves.toEqual([]);
+  expect(store.has('check_suite_1')).toBe(true);
+  expect(announce).not.toHaveBeenCalled();
 });
 
-test('get content from github action', async () => {
+test('buildStates returns all valid rows in DOM order', async () => {
   got.mockResolvedValue({ body: html });
-  const state = await buildState();
-  expect(state).toMatchObject({
-    status: Status.SUCCESS,
-    gitLog: 'trigger build',
-    buildName: 'check_suite_10845785161',
-  });
-  expect(state.colorCode()).toBeDefined();
+  await expect(buildStates()).resolves.toEqual([
+    expect.objectContaining({
+      status: Status.SUCCESS,
+      gitLog: 'trigger build',
+      buildName: 'check_suite_10845785161',
+    }),
+  ]);
   expect(englishDictionary.translate(Status.SUCCESS)).toBe(
     ' completed successfully.'
   );
-});
-
-test('should not say anything is state not changed', () => {
-  const state = new BuildState('build1', Status.SUCCESS, 'do something');
-  const state2 = new BuildState('build1', Status.SUCCESS, 'do something');
-  expect(state.diffToSentence(state2, englishDictionary)).toContain('');
-});
-
-test('found a new build', () => {
-  const state = new BuildState('build1', Status.SUCCESS, 'do something');
-  const state2 = new BuildState('build2', Status.SUCCESS, 'do something');
-  const mostRecentUpdate = MostRecentUpdate();
-  const first = mostRecentUpdate(state);
-  expect(first).toMatchObject({
-    statement: `A new build 'do something' completed successfully.`,
-    colorCode: expect.any(String),
-  });
-  expect(first.colorCode).toBeDefined();
-  const second = mostRecentUpdate(state2);
-  expect(second).toMatchObject({
-    statement: `A new build 'do something' completed successfully.`,
-    colorCode: expect.any(String),
-  });
-  expect(second.colorCode).toBeDefined();
-});
-
-test('found a new status', () => {
-  const state = new BuildState('build1', Status.RUNNING, 'do something');
-  const state2 = new BuildState('build1', Status.SUCCESS, 'do something');
-  const mostRecentUpdate = MostRecentUpdate();
-  const first = mostRecentUpdate(state);
-  expect(first).toMatchObject({
-    statement: `A new build 'do something' is currently running.`,
-  });
-  expect(first.colorCode).toBeDefined();
-  const second = mostRecentUpdate(state2);
-  expect(second).toMatchObject({
-    statement: `The build completed successfully.`,
-  });
-  expect(second.colorCode).toBeDefined();
-});
-
-test('old build comes back again', () => {
-  const state1 = new BuildState('build1', Status.RUNNING, 'do something');
-  const state2 = new BuildState('build2', Status.SUCCESS, 'do something');
-  const state3 = new BuildState('build1', Status.SUCCESS, 'do something');
-
-  const mostRecentUpdate = MostRecentUpdate();
-  mostRecentUpdate(state1);
-  mostRecentUpdate(state2);
-  expect(mostRecentUpdate(state3)).toMatchObject({
-    statement: ``,
-    colorCode: undefined,
-  });
 });
 
 function htmlWithAriaLabel(ariaLabel) {
@@ -315,13 +255,62 @@ function htmlWithAriaLabel(ariaLabel) {
   );
 }
 
+test('buildStates skips malformed siblings and preserves valid DOM order', async () => {
+  const malformed = '<div id="check_suite_bad"><svg></svg></div>';
+  got.mockResolvedValue({
+    body: suitePage(
+      suiteRow({
+        id: 'check_suite_first',
+        ariaLabel: 'queued: first',
+        title: 'first',
+      }),
+      malformed,
+      suiteRow({
+        id: 'check_suite_last',
+        ariaLabel: 'currently running: last',
+        title: 'last',
+      })
+    ),
+  });
+  const error = jest.spyOn(console, 'error').mockImplementation(() => {});
+  await expect(buildStates()).resolves.toEqual([
+    expect.objectContaining({ buildName: 'check_suite_first' }),
+    expect.objectContaining({ buildName: 'check_suite_last' }),
+  ]);
+  expect(error).toHaveBeenCalledWith(
+    'Skipping malformed check suite:',
+    'check_suite_bad'
+  );
+  error.mockRestore();
+});
+
+test('buildStates returns null for all-malformed suite rows', async () => {
+  got.mockResolvedValue({
+    body: '<div id="check_suite_bad"><span class="Link--primary">bad</span></div>',
+  });
+  const error = jest.spyOn(console, 'error').mockImplementation(() => {});
+  await expect(buildStates()).resolves.toBeNull();
+  error.mockRestore();
+});
+
+test('same-title suites remain distinct Map identities', () => {
+  const store = InFlightBuildStore();
+  store.apply([
+    new BuildState('check_suite_a', Status.RUNNING, 'same title'),
+    new BuildState('check_suite_b', Status.QUEUED, 'same title'),
+  ]);
+  expect(store.size).toBe(2);
+  expect(store.get('check_suite_a').status).toBe(Status.RUNNING);
+  expect(store.get('check_suite_b').status).toBe(Status.QUEUED);
+});
+
 describe('live-shaped scrape fixtures (01-02 REL-04)', () => {
   test('live-shaped success aria-label scrapes to Status.SUCCESS', async () => {
     const liveShaped = htmlWithAriaLabel(
       'completed successfully:  Run 1 of CI. title'
     );
     got.mockResolvedValue({ body: liveShaped });
-    const state = await buildState('https://github.com/org/repo/actions');
+    const [state] = await buildStates('https://github.com/org/repo/actions');
     expect(state.status).toBe(Status.SUCCESS);
     expect(state.colorCode()).toBeDefined();
     expect(state.gitLog).toBe('trigger build');
@@ -340,7 +329,7 @@ describe('live-shaped scrape fixtures (01-02 REL-04)', () => {
     'live-shaped %s scrapes to %s with defined color',
     async (ariaLabel, expected) => {
       got.mockResolvedValue({ body: htmlWithAriaLabel(ariaLabel) });
-      const state = await buildState('https://github.com/org/repo/actions');
+      const [state] = await buildStates('https://github.com/org/repo/actions');
       expect(state.status).toBe(expected);
       expect(state.colorCode()).toBeDefined();
     }
@@ -351,7 +340,7 @@ describe('live-shaped scrape fixtures (01-02 REL-04)', () => {
     got.mockResolvedValue({
       body: htmlWithAriaLabel('mystery status:  Run 1 of CI. title'),
     });
-    const state = await buildState('https://github.com/org/repo/actions');
+    const [state] = await buildStates('https://github.com/org/repo/actions');
     expect(state.status).toBe(Status.UNKNOWN);
     expect(state.colorCode()).toBeUndefined();
     expect(err).toHaveBeenCalled();
@@ -423,12 +412,13 @@ describe('enum-only colors and phrases (01-02)', () => {
     expect(fresh.diffToSentence(new BuildState('', ''), englishDictionary)).toBe('');
   });
 
-  test('unknown→unknown via MostRecentUpdate does not throw and stays silent', () => {
-    const update = MostRecentUpdate();
-    const first = update(new BuildState('b1', Status.UNKNOWN, 'log'));
-    expect(first.statement).toBe('');
-    expect(first.colorCode).toBeUndefined();
-    const second = update(new BuildState('b1', Status.UNKNOWN, 'log'));
-    expect(second.statement).toBe('');
+  test('tracked unknown remains silent without losing its Map entry', () => {
+    const store = InFlightBuildStore();
+    store.apply([new BuildState('b1', Status.RUNNING, 'log')]);
+    const announcements = store.apply([
+      new BuildState('b1', Status.UNKNOWN, 'log'),
+    ]);
+    expect(announcements).toEqual([]);
+    expect(store.has('b1')).toBe(true);
   });
 });
