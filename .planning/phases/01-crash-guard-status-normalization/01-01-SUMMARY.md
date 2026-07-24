@@ -113,7 +113,7 @@ Each task was committed atomically:
 1. **Task 1: End-to-end crash-safe scrape → enum success announce** - `a415b5f` (feat)
 2. **Task 2: Tracer tests: REL-01 nulls + scrape→enum + enum announce** - `ecd23fb` (test)
 
-**Plan metadata:** (pending docs commit)
+**Plan metadata:** `bb8187b` (docs: complete plan)
 
 ## Files Created/Modified
 - `index.js` - Status, normalizeStatus, null-safe buildState, enum color/speech, poll guard, exports
