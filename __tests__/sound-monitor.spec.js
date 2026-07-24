@@ -227,6 +227,57 @@ test('old build comes back again', () => {
   });
 });
 
+function htmlWithAriaLabel(ariaLabel) {
+  return html.replace(
+    'aria-label="completed successfully"',
+    `aria-label="${ariaLabel}"`
+  );
+}
+
+describe('live-shaped scrape fixtures (01-02 REL-04)', () => {
+  test('live-shaped success aria-label scrapes to Status.SUCCESS', async () => {
+    const liveShaped = htmlWithAriaLabel(
+      'completed successfully:  Run 1 of CI. title'
+    );
+    got.mockResolvedValue({ body: liveShaped });
+    const state = await buildState('https://github.com/org/repo/actions');
+    expect(state.status).toBe(Status.SUCCESS);
+    expect(state.colorCode()).toBeDefined();
+    expect(state.gitLog).toBe('trigger build');
+  });
+
+  const liveCases = [
+    ['queued:  Run 1 of CI. title', Status.QUEUED],
+    ['currently running:  Run 1 of CI. title', Status.RUNNING],
+    ['failed:  Run 1 of CI. title', Status.FAILURE],
+    ['skipped:  Run 1 of CI. title', Status.SKIPPED],
+    ['cancelled:  Run 1 of CI. title', Status.CANCELLED],
+    ['requires action with the application:  Run 1 of CI. title', Status.ACTION_REQUIRED],
+  ];
+
+  test.each(liveCases)(
+    'live-shaped %s scrapes to %s with defined color',
+    async (ariaLabel, expected) => {
+      got.mockResolvedValue({ body: htmlWithAriaLabel(ariaLabel) });
+      const state = await buildState('https://github.com/org/repo/actions');
+      expect(state.status).toBe(expected);
+      expect(state.colorCode()).toBeDefined();
+    }
+  );
+
+  test('unrecognized live-shaped label scrapes to unknown without crash', async () => {
+    const err = jest.spyOn(console, 'error').mockImplementation(() => {});
+    got.mockResolvedValue({
+      body: htmlWithAriaLabel('mystery status:  Run 1 of CI. title'),
+    });
+    const state = await buildState('https://github.com/org/repo/actions');
+    expect(state.status).toBe(Status.UNKNOWN);
+    expect(state.colorCode()).toBeUndefined();
+    expect(err).toHaveBeenCalled();
+    err.mockRestore();
+  });
+});
+
 describe('normalizeStatus full mapping (01-02)', () => {
   const cases = [
     ['queued', Status.QUEUED],
