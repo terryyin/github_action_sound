@@ -9,10 +9,10 @@ Requirements for this milestone. Each maps to roadmap phases.
 
 ### Reliability
 
-- [ ] **REL-01**: On scrape/network/DOM failure, the poll tick logs the error and skips updates without throwing or clearing in-flight state
-- [ ] **REL-02**: Scraped SVG `aria-label` values are normalized to a single status enum used for color, speech, and lifecycle decisions
-- [ ] **REL-03**: Colored stderr and spoken phrases use the normalized status enum (live GitHub labels produce correct colors and sentences)
-- [ ] **REL-04**: Unit tests assert against the normalized enum / live fixture labels (no synthetic dotted status strings that diverge from production)
+- [x] **REL-01**: On scrape/network/DOM failure, the poll tick logs the error and skips updates without throwing or clearing in-flight state
+- [x] **REL-02**: Scraped SVG `aria-label` values are normalized to a single status enum used for color, speech, and lifecycle decisions
+- [x] **REL-03**: Colored stderr and spoken phrases use the normalized status enum (live GitHub labels produce correct colors and sentences)
+- [x] **REL-04**: Unit tests assert against the normalized enum / live fixture labels (no synthetic dotted status strings that diverge from production)
 
 ### Concurrent Tracking
 
@@ -77,10 +77,10 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| REL-01 | Phase 1 | Pending |
-| REL-02 | Phase 1 | Pending |
-| REL-03 | Phase 1 | Pending |
-| REL-04 | Phase 1 | Pending |
+| REL-01 | Phase 1 | Complete |
+| REL-02 | Phase 1 | Complete |
+| REL-03 | Phase 1 | Complete |
+| REL-04 | Phase 1 | Complete |
 | MULTI-01 | Phase 2 | Pending |
 | MULTI-02 | Phase 2 | Pending |
 | MULTI-03 | Phase 2 | Pending |
@@ -92,6 +92,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | STRUCT-01 | Phase 3 | Pending |
 
 **Coverage:**
+
 - v1 requirements: 13 total
 - Mapped to phases: 13
 - Unmapped: 0 ✓
