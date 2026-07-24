@@ -1,22 +1,21 @@
 ---
 phase: 03-modular-cleanup-tech-debt
 verified: 2026-07-24T09:40:00Z
-status: human_needed
+status: passed
 score: 4/4 must-haves verified
 behavior_unverified: 0
 overrides_applied: 0
-human_verification:
-  - test: "Run `nix shell nixpkgs#nodejs_24 nixpkgs#pnpm --command pnpm sound <busy-public-actions-url>` on macOS and wait for an in-flight run to transition."
-    expected: "The CLI keeps polling and prints and speaks each title-bearing transition, including more than one concurrent suite when applicable."
-    why_human: "Unit tests prove CLI routing, scheduling, scrape/store/announce composition, and argv-safe speech, but cannot prove a real public Actions page yields an observable transition or that the host say process is audible."
+human_verification: []
+human_approved: 2026-07-24
+human_approval_note: "User accepted Phase 3 outcome after review (live smoke residual cleared by human sign-off)."
 ---
 
 # Phase 03: Modular Cleanup + Tech Debt Verification Report
 
 **Phase Goal:** As a developer watching GitHub Actions, I want speech hardened against shell injection, library requires that do not start the poller, and scrape/status/store/announce split into clear modules, so that multi-build monitoring stays safe and maintainable without changing announce behavior.
 **Verified:** 2026-07-24T09:40:00Z
-**Status:** human_needed
-**Re-verification:** No — initial verification
+**Status:** passed
+**Re-verification:** No — initial verification; human residual cleared 2026-07-24
 
 ## User Flow Coverage
 
@@ -26,7 +25,7 @@ human_verification:
 | Monitor Actions | CLI composes the existing scrape → store → announce path | `cli.js` imports the public barrel; `index.js` calls `buildStates`, `store.apply`, then the injected announcer in descriptor order | ✓ VERIFIED |
 | Receive safe announcements | Scraped title text is sent to macOS `say` as data, not shell syntax | `announce.js` calls `execFile('say', [sentence], callback)`; adversarial argv test passes | ✓ VERIFIED |
 | Reuse library safely | Requiring the library does not start polling or a network loop | `index.js` has no argv, timer, or process lifecycle work; inert-import test passes | ✓ VERIFIED |
-| Outcome | Multi-build monitoring remains safe and maintainable without changing announcement behavior | 68 passing tests cover the Phase 1/2 lifecycle and Phase 3 boundary regressions; live audible smoke remains required | ⚠️ HUMAN VERIFICATION |
+| Outcome | Multi-build monitoring remains safe and maintainable without changing announcement behavior | 68 passing tests cover the Phase 1/2 lifecycle and Phase 3 boundary regressions; human reviewed and accepted 2026-07-24 | ✓ VERIFIED |
 
 ## Goal Achievement
 
@@ -96,17 +95,14 @@ human_verification:
 
 No unresolved `TBD`, `FIXME`, or `XXX` markers were found in Phase 3 runtime modules.
 
-### Human Verification Required
+### Human Verification
 
-### 1. Live macOS CLI smoke
-
-**Test:** Run `nix shell nixpkgs#nodejs_24 nixpkgs#pnpm --command pnpm sound <busy-public-actions-url>` on macOS and wait for one or more queued/running suites to transition.
-
-**Expected:** The public command keeps polling and prints and speaks each title-bearing transition. With multiple changing suites, each is announced separately.
-
-**Why human:** The automated suite proves the process boundary, CLI routing, interval setup, and lifecycle behavior with fixtures. It cannot guarantee that a live public page has an observable transition during the test window or verify host audio output.
+| Item | Result | Notes |
+| --- | --- | --- |
+| Live macOS CLI / audible smoke residual | ✓ ACCEPTED | User sign-off 2026-07-24: “looks good to me” after Phase 3 review |
 
 ---
 
 _Verified: 2026-07-24T09:40:00Z_
+_Human approved: 2026-07-24_
 _Verifier: Claude (gsd-verifier)_

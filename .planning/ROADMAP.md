@@ -15,7 +15,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 - [ ] **Phase 1: Crash Guard + Status Normalization** - Safe poll ticks and a single status enum for color, speech, and lifecycle
 - [x] **Phase 2: Multi-Build Tracking + Fan-out** - Track all in-flight suites and announce every meaningful change (completed 2026-07-24)
-- [ ] **Phase 3: Modular Cleanup + Tech Debt** - Safe `say`, no import-side-effect poller, clear module boundaries
+- [x] **Phase 3: Modular Cleanup + Tech Debt** - Safe `say`, no import-side-effect poller, clear module boundaries (completed 2026-07-24)
 
 ## Phase Details
 
@@ -73,7 +73,7 @@ Plans:
   3. Scrape, status normalization, in-flight store, and announce responsibilities are split out of the single monolith into clear modules
   4. Public CLI usage `github_action_sound <actions-url>` still works with Phase 2 behavior intact
 
-**Plans:** 2/2 plans executed
+**Plans:** 2/2 plans complete
 
 Plans:
 
@@ -89,7 +89,7 @@ Phases execute in numeric order: 1 → 2 → 3
 |-------|----------------|--------|-----------|
 | 1. Crash Guard + Status Normalization | 2/2 | In Progress|  |
 | 2. Multi-Build Tracking + Fan-out | 2/2 | Complete   | 2026-07-24 |
-| 3. Modular Cleanup + Tech Debt | 2/2 | In Progress|  |
+| 3. Modular Cleanup + Tech Debt | 2/2 | Complete    | 2026-07-24 |
 
 ---
 *Roadmap created: 2026-07-24*
