@@ -53,11 +53,12 @@ Plans:
   4. When multiple in-flight builds change in one poll, each change is announced (overlapping `say` allowed; no single summary coalescing)
   5. A previously completed suite id can be tracked again if it reappears as queued/running (no forever blacklist)
 
-**Plans:** TBD
+**Plans:** 2 plans
 
 Plans:
 
-- [ ] 02-01: TBD (defined during planning)
+- [ ] 02-01-PLAN.md — Tracer: all-suite scrape, per-id Map tracking, and ordered two-suite fan-out
+- [ ] 02-02-PLAN.md — Full lifecycle matrix: terminal retirement, absence retention, re-admission, attention/unknown, and title refresh
 
 ### Phase 3: Modular Cleanup + Tech Debt
 
@@ -86,7 +87,7 @@ Phases execute in numeric order: 1 → 2 → 3
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Crash Guard + Status Normalization | 2/2 | In Progress|  |
-| 2. Multi-Build Tracking + Fan-out | 0/TBD | Not started | - |
+| 2. Multi-Build Tracking + Fan-out | 0/2 | Planned | - |
 | 3. Modular Cleanup + Tech Debt | 0/TBD | Not started | - |
 
 ---

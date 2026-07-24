@@ -4,15 +4,15 @@ milestone: v1.0
 milestone_name: milestone
 current_phase: 2
 current_phase_name: Multi-Build Tracking + Fan-out
-status: research_complete
-stopped_at: Phase 2 research complete — ready for planning
-last_updated: "2026-07-24T08:35:00.000Z"
+status: planned
+stopped_at: Phase 2 plans 02-01 and 02-02 created — ready for execution
+last_updated: "2026-07-24T08:41:00.000Z"
 last_activity: 2026-07-24
-last_activity_desc: Phase 1 plans 01-01 and 01-02 executed; 49/49 tests passed
+last_activity_desc: Phase 2 planned in two waves with complete MULTI-01…MULTI-06 and D-01…D-10 coverage
 progress:
   total_phases: 2
   completed_phases: 0
-  total_plans: 3
+  total_plans: 4
   completed_plans: 2
 ---
 
@@ -23,14 +23,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-07-24)
 
 **Core value:** When several workflows are in flight, every queued/running build’s meaningful status changes are announced — nothing important is silently dropped because only the top DOM row was watched.
-**Current focus:** Phase 2: Multi-Build Tracking + Fan-out (research complete; ready for planning)
+**Current focus:** Phase 2: Multi-Build Tracking + Fan-out (planned; ready for execution)
 
 ## Current Position
 
-Phase: 2 of 3 (Multi-Build Tracking + Fan-out) — RESEARCH COMPLETE
-Plan: 0 of TBD planned
-Status: Phase 2 research complete — ready for planning
-Last activity: 2026-07-24 — Phase 2 research completed; baseline Jest suite passed 49/49 tests
+Phase: 2 of 3 (Multi-Build Tracking + Fan-out) — PLANNED
+Plan: 0 of 2 executed
+Status: Phase 2 plans created — ready for execution
+Last activity: 2026-07-24 — Plans 02-01 and 02-02 created with tracer-first wave structure
 
 Progress: [███░░░░░░░] 33%
 
@@ -76,6 +76,9 @@ Recent decisions affecting current work:
 - [Phase ?]: englishDictionary omits unknown so unrecognized statuses are never spoken
 - [Phase ?]: Unknown / missing phrase always yields empty statement — no partial speech
 - [Phase ?]: Fixture-lock queued and cancelled live-shaped heads without live GitHub fetch
+- [Phase 2]: Missing tracked ids are retained until an observed terminal status; no absence-derived completion or miss-based pruning
+- [Phase 2]: Admit queued/running only; terminal success/failure/cancelled/skipped announces then deletes; ids can re-enter
+- [Phase 2]: action_required remains tracked after announce; unknown remains tracked and silent; titles refresh every successful observation
 
 ### Pending Todos
 
@@ -85,7 +88,7 @@ None yet.
 
 - Live aria-labels use `STATUS_PREFIX:  Run N of …` (verified 2026-07-24); Phase 1 fixtures must cover that shape
 - Queued/cancelled exact live prefixes still weakly sampled — fixture-lock `queued` / `cancelled` heads
-- Phase 2 store rules need an absence policy when a tracked suite vanishes without a terminal scrape
+- Phase 2 absence policy resolved by D-01/D-03: keep until observed terminal; no miss-count pruning
 
 ## Deferred Items
 
@@ -97,6 +100,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-07-24T08:35:00.000Z
-Stopped at: Phase 2 research complete — ready for planning
-Resume file: .planning/phases/02-multi-build-tracking-fan-out/02-RESEARCH.md
+Last session: 2026-07-24T08:41:00.000Z
+Stopped at: Phase 2 plans 02-01 and 02-02 created — ready for execution
+Resume file: .planning/phases/02-multi-build-tracking-fan-out/02-01-PLAN.md
