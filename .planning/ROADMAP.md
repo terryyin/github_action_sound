@@ -73,12 +73,12 @@ Plans:
   3. Scrape, status normalization, in-flight store, and announce responsibilities are split out of the single monolith into clear modules
   4. Public CLI usage `github_action_sound <actions-url>` still works with Phase 2 behavior intact
 
-**Plans:** 1/2 plans executed
+**Plans:** 2/2 plans executed
 
 Plans:
 
 - [x] 03-01-PLAN.md — Safe CLI-to-speech tracer: argv-form say, inert library import, and cli.js package routing
-- [ ] 03-02-PLAN.md — Four-module extraction with complete Phase 2 behavior-preservation coverage
+- [x] 03-02-PLAN.md — Four-module extraction with complete Phase 2 behavior-preservation coverage
 
 ## Progress
 
@@ -89,7 +89,7 @@ Phases execute in numeric order: 1 → 2 → 3
 |-------|----------------|--------|-----------|
 | 1. Crash Guard + Status Normalization | 2/2 | In Progress|  |
 | 2. Multi-Build Tracking + Fan-out | 2/2 | Complete   | 2026-07-24 |
-| 3. Modular Cleanup + Tech Debt | 1/2 | In Progress|  |
+| 3. Modular Cleanup + Tech Debt | 2/2 | In Progress|  |
 
 ---
 *Roadmap created: 2026-07-24*

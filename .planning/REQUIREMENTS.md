@@ -25,9 +25,9 @@ Requirements for this milestone. Each maps to roadmap phases.
 
 ### Safety & Structure
 
-- [ ] **SAFE-01**: Speech invocation does not pass scraped text through a shell string (`execFile` or equivalent argv form)
-- [ ] **SAFE-02**: Requiring library modules for tests does not start the live poller or network loop (`require.main` / separate CLI entry)
-- [ ] **STRUCT-01**: Scrape, status normalization, in-flight store, and announce responsibilities are split out of the single monolith into clear modules after multi-build behavior is proven
+- [x] **SAFE-01**: Speech invocation does not pass scraped text through a shell string (`execFile` or equivalent argv form)
+- [x] **SAFE-02**: Requiring library modules for tests does not start the live poller or network loop (`require.main` / separate CLI entry)
+- [x] **STRUCT-01**: Scrape, status normalization, in-flight store, and announce responsibilities are split out of the single monolith into clear modules after multi-build behavior is proven
 
 ## v2 Requirements
 
@@ -87,9 +87,9 @@ Which phases cover which requirements. Updated during roadmap creation.
 | MULTI-04 | Phase 2 | Complete |
 | MULTI-05 | Phase 2 | Complete |
 | MULTI-06 | Phase 2 | Complete |
-| SAFE-01 | Phase 3 | Pending |
-| SAFE-02 | Phase 3 | Pending |
-| STRUCT-01 | Phase 3 | Pending |
+| SAFE-01 | Phase 3 | Complete |
+| SAFE-02 | Phase 3 | Complete |
+| STRUCT-01 | Phase 3 | Complete |
 
 **Coverage:**
 

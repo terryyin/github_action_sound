@@ -5,15 +5,15 @@ milestone_name: milestone
 current_phase: 3
 current_phase_name: Modular Cleanup + Tech Debt
 status: planned
-stopped_at: Completed 03-01-PLAN.md
-last_updated: "2026-07-24T09:36:12.478Z"
+stopped_at: Completed 03-02-PLAN.md
+last_updated: "2026-07-24T09:40:15.026Z"
 last_activity: 2026-07-24
 last_activity_desc: Phase 3 planned
 progress:
   total_phases: 3
   completed_phases: 0
   total_plans: 9
-  completed_plans: 5
+  completed_plans: 6
 ---
 
 # Project State
@@ -28,11 +28,11 @@ See: .planning/PROJECT.md (updated 2026-07-24)
 ## Current Position
 
 Phase: 3 of 3 (Modular Cleanup + Tech Debt) — PLANNED
-Plan: 1 of 2 executed
+Plan: 2 of 2 executed
 Status: SAFE-01, SAFE-02, STRUCT-01 planned in 2 waves
 Last activity: 2026-07-24 — Phase 3 planned
 
-Progress: [██████░░░░] 56%
+Progress: [███████░░░] 67%
 
 ## Performance Metrics
 
@@ -63,6 +63,7 @@ Progress: [██████░░░░] 56%
 | Phase 02 P01 | 2 min | 2 tasks | 2 files |
 | Phase 02 P02 | 1 min | 2 tasks | 1 files |
 | Phase 03 P01 | 2 min | 2 tasks | 5 files |
+| Phase 03 P02 | 2 min | 1 tasks | 5 files |
 
 ## Accumulated Context
 
@@ -89,6 +90,8 @@ Recent decisions affecting current work:
 - [Phase ?]: Every observed tracked row refreshes its display title before a later transition.
 - [Phase ?]: Keep actionSoundJob dependency-injected while cli.js owns argv, store, and interval state.
 - [Phase ?]: Use execFile('say', [sentence], callback) to preserve asynchronous speech without a shell.
+- [Phase ?]: Preserve the proven scrape and lifecycle logic as a one-way CommonJS module extraction, not a redesign.
+- [Phase ?]: Keep index.js as an inert public barrel with dependency-injected actionSoundJob composition.
 
 ### Pending Todos
 
@@ -111,6 +114,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-07-24T09:36:12.472Z
-Stopped at: Completed 03-01-PLAN.md
+Last session: 2026-07-24T09:40:15.020Z
+Stopped at: Completed 03-02-PLAN.md
 Resume file: None
