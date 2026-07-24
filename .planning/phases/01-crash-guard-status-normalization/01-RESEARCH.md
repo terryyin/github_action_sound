@@ -386,22 +386,11 @@ test('normalizes live-shaped aria-label to success', async () => {
 
 **If planner rejects A1:** map `requires action…` → `unknown` and skip speech (still D-04 compliant).
 
-## Open Questions
+## Open Questions (RESOLVED)
 
-1. **`action_required` in the closed enum?**
-   - What we know: Live pages frequently use `requires action with the application:  Run…` [VERIFIED: live HTML]
-   - What's unclear: Whether Phase 1 should announce it or treat as unknown until Phase 2 lifecycle policy
-   - Recommendation: Include `action_required` with color + phrase (A1); cheap and matches Checks API vocabulary [CITED: docs.github.com status checks]
-
-2. **Exact queued aria-label text**
-   - What we know: Not observed in sampled public pages today; historical code expected `queued: `
-   - What's unclear: Whether live text is `queued`, `queued:  Run…`, or something else
-   - Recommendation: Map head `queued`; add fixture `aria-label="queued:  Run 1 of CI. title"` for REL-04 without live fetch
-
-3. **Which svg aria-label when multiple exist on a row?**
-   - What we know: Live rows expose both long `completed successfully:  Run…` and short `completed successfully: ` [VERIFIED: live HTML]
-   - What's unclear: Whether `querySelector('svg')` always hits the status icon first
-   - Recommendation: Prefer `row.querySelector('svg[aria-label]')` and normalize via prefix; first match is enough for Phase 1
+1. **`action_required` in the closed enum?** — **RESOLVED:** Include `action_required` as a first-class Status member with color + phrase (planner locked A1).
+2. **Exact queued aria-label text** — **RESOLVED:** Map status head starting with `queued`; fixture-lock `aria-label="queued:  Run 1 of CI. title"` (no live fetch required).
+3. **Which svg aria-label when multiple exist on a row?** — **RESOLVED:** Prefer `row.querySelector('svg[aria-label]')` and normalize via prefix; Phase 1 first match is enough.
 
 ## Environment Availability
 
