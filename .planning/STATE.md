@@ -1,18 +1,16 @@
 ---
 gsd_state_version: 1.0
 milestone: v1.0
-milestone_name: milestone
-current_phase: 1
-current_phase_name: Crash Guard + Status Normalization
-status: planning
-stopped_at: Phase 3 complete — human sign-off accepted
-last_updated: "2026-07-24T10:02:52.604Z"
+milestone_name: Concurrent Builds Fix
+status: Awaiting next milestone
+stopped_at: Milestone v1.0 shipped (override closeout)
+last_updated: "2026-07-24T10:30:36.587Z"
 last_activity: 2026-07-24
-last_activity_desc: Phase 3 complete, transitioned to Phase 1
+last_activity_desc: Milestone v1.0 completed and archived
 progress:
   total_phases: 3
-  completed_phases: 0
-  total_plans: 9
+  completed_phases: 3
+  total_plans: 6
   completed_plans: 6
 ---
 
@@ -23,16 +21,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-07-24)
 
 **Core value:** When several workflows are in flight, every queued/running build’s meaningful status changes are announced — nothing important is silently dropped because only the top DOM row was watched.
-**Current focus:** Phase 3: Modular Cleanup + Tech Debt (awaiting live macOS CLI smoke)
+**Current focus:** Planning next milestone
 
 ## Current Position
 
-Phase: 1 of 3 (Crash Guard + Status Normalization)
-Plan: Not started
-Status: Ready to plan
-Last activity: 2026-07-24 — Phase 3 complete, transitioned to Phase 1
-
-Progress: [███████░░░] 67%
+Phase: Milestone v1.0 complete
+Plan: —
+Status: Awaiting next milestone
+Last activity: 2026-07-24 — Milestone v1.0 completed and archived
 
 ## Performance Metrics
 
@@ -69,29 +65,7 @@ Progress: [███████░░░] 67%
 
 ### Decisions
 
-Decisions are logged in PROJECT.md Key Decisions table.
-Recent decisions affecting current work:
-
-- Roadmap: reliability (crash + normalize) → multi-build tracking → cleanup/refactor
-- Track all in-flight builds by suite id; announce by commit/title; overlapping `say` OK
-- Stay on public HTML scrape; no API auth this milestone
-- [Phase ?]: Status string values: queued, running, success, failure, cancelled, skipped, action_required, unknown
-- [Phase ?]: buildState failure returns explicit null; actionSoundJob uses newState == null guard
-- [Phase ?]: englishDictionary omits unknown so unrecognized statuses are never spoken
-- [Phase ?]: Unknown / missing phrase always yields empty statement — no partial speech
-- [Phase ?]: Fixture-lock queued and cancelled live-shaped heads without live GitHub fetch
-- [Phase 2]: Missing tracked ids are retained until an observed terminal status; no absence-derived completion or miss-based pruning
-- [Phase 2]: Admit queued/running only; terminal success/failure/cancelled/skipped announces then deletes; ids can re-enter
-- [Phase 2]: action_required remains tracked after announce; unknown remains tracked and silent; titles refresh every successful observation
-- [Phase ?]: Use check-suite DOM ids as the only Map identity; titles are display-only.
-- [Phase ?]: Treat null, empty, and all-malformed scrapes as no-ops before store mutation.
-- [Phase ?]: Only observed terminal states retire tracked suites; absent rows remain stored.
-- [Phase ?]: Tracked action_required announces and remains stored; tracked unknown remains silent and stored.
-- [Phase ?]: Every observed tracked row refreshes its display title before a later transition.
-- [Phase ?]: Keep actionSoundJob dependency-injected while cli.js owns argv, store, and interval state.
-- [Phase ?]: Use execFile('say', [sentence], callback) to preserve asynchronous speech without a shell.
-- [Phase ?]: Preserve the proven scrape and lifecycle logic as a one-way CommonJS module extraction, not a redesign.
-- [Phase ?]: Keep index.js as an inert public barrel with dependency-injected actionSoundJob composition.
+Decisions are logged in PROJECT.md Key Decisions table (full v1.0 log there).
 
 ### Pending Todos
 
@@ -99,21 +73,23 @@ None yet.
 
 ### Blockers/Concerns
 
-- Live aria-labels use `STATUS_PREFIX:  Run N of …` (verified 2026-07-24); Phase 1 fixtures must cover that shape
-- Queued/cancelled exact live prefixes still weakly sampled — fixture-lock `queued` / `cancelled` heads
-- Phase 2 absence policy resolved by D-01/D-03: keep until observed terminal; no miss-count pruning
-- Phase 2 verification is blocked until ROADMAP.md Phase 2 goal is rewritten as a valid MVP user story
+None open — v1.0 blockers were resolved during the milestone (live aria-label shape verified and fixture-locked; Phase 2 absence policy settled; Phase 2 goal rewritten and re-verified).
 
 ## Deferred Items
 
-Items acknowledged and carried forward from previous milestone close:
+Items acknowledged and deferred at milestone close on 2026-07-24:
 
 | Category | Item | Status | Deferred At |
 |----------|------|--------|-------------|
-| *(none)* | | | |
+| verification | Phase 1 (crash-guard-status-normalization) closed without VERIFICATION.md | override accepted by user | 2026-07-24 |
+| audit | Milestone closed without /gsd-audit-milestone run | override accepted by user | 2026-07-24 |
 
 ## Session Continuity
 
-Last session: 2026-07-24T10:02:52.593Z
-Stopped at: Phase 3 complete — human sign-off accepted
-Resume file: .planning/phases/03-modular-cleanup-tech-debt/03-VERIFICATION.md
+Last session: 2026-07-24T10:30:36.587Z
+Stopped at: Milestone v1.0 shipped (override closeout)
+Resume file: .planning/MILESTONES.md
+
+## Operator Next Steps
+
+- Start the next milestone with $gsd-new-milestone
