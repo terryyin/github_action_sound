@@ -90,17 +90,27 @@ function normalizeStatus(ariaLabel) {
   return Status.UNKNOWN;
 }
 
-async function buildState(url) {
+async function buildStates(url) {
   try {
     const resp = await got(url);
     const dom = new JSDOM(resp.body);
-    const row = dom.window.document.querySelector("[id^='check_suite_']");
-    if (!row) return null;
-    const svg = row.querySelector('svg[aria-label]');
-    const title = row.querySelector('span.Link--primary');
-    const aria = svg && svg.getAttribute('aria-label');
-    if (!svg || !aria || !title) return null;
-    return new BuildState(row.id, normalizeStatus(aria), title.textContent.trim());
+    const rows = dom.window.document.querySelectorAll("[id^='check_suite_']");
+    if (rows.length === 0) return null;
+
+    const states = [];
+    for (const row of rows) {
+      const svg = row.querySelector('svg[aria-label]');
+      const title = row.querySelector('span.Link--primary');
+      const aria = svg && svg.getAttribute('aria-label');
+      if (!row.id || !svg || !aria || !title) {
+        console.error('Skipping malformed check suite:', row.id);
+        continue;
+      }
+      states.push(
+        new BuildState(row.id, normalizeStatus(aria), title.textContent.trim())
+      );
+    }
+    return states.length > 0 ? states : null;
   } catch (err) {
     console.error(err);
     return null;
@@ -128,7 +138,7 @@ class BuildState {
       );
     }
     if (this.status !== Status.QUEUED && this.status != previousState.status) {
-      return dictionary.translate('the_build') + statusPhrase;
+      return dictionary.translate('the_build') + ` '${this.gitLog}'` + statusPhrase;
     }
     return '';
   }
@@ -181,46 +191,95 @@ const japaneseDictionary = {
 
 const githubActionURL = process.argv[process.argv.length - 1];
 
-const MostRecentUpdate = () => {
-  var lastBuildState = new BuildState('', '');
-  var previousBuildNames = [];
+function isInFlight(status) {
+  return status === Status.QUEUED || status === Status.RUNNING;
+}
 
-  return (newState) => {
-    if(previousBuildNames.includes(newState.buildName)) {
-      return { statement: '', colorCode: undefined };
-    }
-    const result = {
-      statement: newState.diffToSentence(lastBuildState, englishDictionary),
-      colorCode: newState.colorCode(),
+function isTerminal(status) {
+  return [
+    Status.SUCCESS,
+    Status.FAILURE,
+    Status.CANCELLED,
+    Status.SKIPPED,
+  ].includes(status);
+}
+
+const InFlightBuildStore = () => {
+  const statesById = new Map();
+
+  function descriptor(next, previous) {
+    return {
+      statement: next.diffToSentence(previous, englishDictionary),
+      colorCode: next.colorCode(),
     };
-    if(lastBuildState.buildName != newState.buildName) {
-      previousBuildNames.push(lastBuildState.buildName);
+  }
+
+  function apply(states) {
+    const announcements = [];
+    for (const next of states) {
+      const previous = statesById.get(next.buildName);
+      if (!previous) {
+        if (isInFlight(next.status)) {
+          statesById.set(next.buildName, next);
+          announcements.push(descriptor(next, new BuildState('', '')));
+        }
+        continue;
+      }
+
+      if (next.status === Status.UNKNOWN) {
+        statesById.set(next.buildName, next);
+        continue;
+      }
+
+      const announcement = descriptor(next, previous);
+      statesById.set(next.buildName, next);
+      if (announcement.statement !== '') {
+        announcements.push(announcement);
+      }
+      if (isTerminal(next.status)) {
+        statesById.delete(next.buildName);
+      }
     }
-    lastBuildState = newState;
-    return result;
+
+    return announcements;
+  }
+
+  return {
+    apply,
+    has: (id) => statesById.has(id),
+    get: (id) => statesById.get(id),
+    get size() {
+      return statesById.size;
+    },
   };
 };
 
-const mostRecentUpdate = MostRecentUpdate();
+const inFlightBuildStore = InFlightBuildStore();
 
-const actionSoundJob = () => {
-  buildState(githubActionURL).then(
-    (newState) => {
-      if (newState == null) return;
-      const toSay = mostRecentUpdate(newState);
-      say(toSay.statement, toSay.colorCode);
-    }
-  );
+const actionSoundJob = async (
+  url = githubActionURL,
+  announce = say,
+  store = inFlightBuildStore
+) => {
+  const states = await buildStates(url);
+  if (states == null) return [];
+
+  const announcements = store.apply(states);
+  for (const announcement of announcements) {
+    announce(announcement.statement, announcement.colorCode);
+  }
+  return announcements;
 };
 
 const timer = setInterval(actionSoundJob , 5000);
 
 module.exports = {
-  buildState,
+  buildStates,
   BuildState,
   say,
   englishDictionary,
-  MostRecentUpdate,
+  InFlightBuildStore,
+  actionSoundJob,
   timer,
   Status,
   normalizeStatus,

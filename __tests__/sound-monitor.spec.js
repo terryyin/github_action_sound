@@ -174,9 +174,10 @@ test('two-suite fan-out: scrape → Map → ordered announce', async () => {
     })
   );
 
-  got.mockResolvedValueOnce({ body: firstPage }).mockResolvedValueOnce({
-    body: secondPage,
-  });
+  got
+    .mockResolvedValueOnce({ body: firstPage })
+    .mockResolvedValueOnce({ body: firstPage })
+    .mockResolvedValueOnce({ body: secondPage });
 
   const firstStates = await buildStates(url);
   expect(firstStates).toEqual([
@@ -192,9 +193,6 @@ test('two-suite fan-out: scrape → Map → ordered announce', async () => {
     }),
   ]);
 
-  got.mockResolvedValueOnce({ body: firstPage }).mockResolvedValueOnce({
-    body: secondPage,
-  });
   await actionSoundJob(url, announce, store);
   expect(store.size).toBe(2);
   expect(store.has('check_suite_a')).toBe(true);
