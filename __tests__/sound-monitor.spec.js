@@ -1,4 +1,6 @@
 const got = require('got');
+const fs = require('fs');
+const path = require('path');
 const { execFile } = require('child_process');
 const {
   buildStates,
@@ -639,6 +641,34 @@ describe('safe CLI-to-speech boundary (03-01)', () => {
     error.mockRestore();
   });
 
+  test('say remains asynchronous after a child-process error', () => {
+    const callbacks = [];
+    const error = jest.spyOn(console, 'error').mockImplementation(() => {});
+    execFile.mockImplementation((_command, _args, callback) => {
+      callbacks.push(callback);
+    });
+
+    say('first announcement', '');
+    say('second announcement', '');
+    const childError = new Error('say unavailable');
+    callbacks[0](childError);
+    say('third announcement', '');
+
+    expect(execFile).toHaveBeenCalledTimes(3);
+    expect(error).toHaveBeenCalledWith(childError);
+    error.mockRestore();
+  });
+
+  test('say skips empty sentences without stderr or a child process', () => {
+    const error = jest.spyOn(console, 'error').mockImplementation(() => {});
+
+    say('', '');
+
+    expect(execFile).not.toHaveBeenCalled();
+    expect(error).not.toHaveBeenCalled();
+    error.mockRestore();
+  });
+
   test('requiring the library starts no runtime side effects or timer export', () => {
     jest.resetModules();
     const setIntervalSpy = jest.spyOn(global, 'setInterval');
@@ -685,5 +715,19 @@ describe('safe CLI-to-speech boundary (03-01)', () => {
     setIntervalSpy.mockRestore();
     process.argv = originalArgv;
     jest.dontMock('../index.js');
+  });
+
+  test('manifest routes library and executable entries to their contract files', () => {
+    const manifest = require('../package.json');
+    const cliPath = path.resolve(__dirname, '..', manifest.bin.github_action_sound);
+
+    expect(manifest.main).toBe('index.js');
+    expect(manifest.bin.github_action_sound).toBe('./cli.js');
+    expect(manifest.scripts.sound).toBe('node ./cli.js');
+    expect(cliPath).toBe(path.resolve(__dirname, '..', 'cli.js'));
+    expect(fs.existsSync(cliPath)).toBe(true);
+    expect(fs.readFileSync(cliPath, 'utf8').split('\n')[0]).toBe(
+      '#!/usr/bin/env node'
+    );
   });
 });
