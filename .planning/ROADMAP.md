@@ -32,12 +32,12 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. Colored stderr and spoken phrases reflect that enum (no `undefined` color/phrase for known live labels)
   4. Unit tests assert against the normalized enum / live fixture labels rather than synthetic dotted status strings
 
-**Plans:** 1/2 plans executed
+**Plans:** 2/2 plans executed
 
 Plans:
 
 - [x] 01-01-PLAN.md — Tracer: null-safe scrape + Status enum through success color/speech
-- [ ] 01-02-PLAN.md — Full status mapping, unknown skip, live-shaped fixtures (REL-02/03/04)
+- [x] 01-02-PLAN.md — Full status mapping, unknown skip, live-shaped fixtures (REL-02/03/04)
 
 ### Phase 2: Multi-Build Tracking + Fan-out
 
@@ -85,7 +85,7 @@ Phases execute in numeric order: 1 → 2 → 3
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Crash Guard + Status Normalization | 1/2 | In Progress|  |
+| 1. Crash Guard + Status Normalization | 2/2 | In Progress|  |
 | 2. Multi-Build Tracking + Fan-out | 0/TBD | Not started | - |
 | 3. Modular Cleanup + Tech Debt | 0/TBD | Not started | - |
 
