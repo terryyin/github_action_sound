@@ -60,17 +60,50 @@ function say(sentence, colorCode) {
   });
 }
 
+const Status = Object.freeze({
+  QUEUED: 'queued',
+  RUNNING: 'running',
+  SUCCESS: 'success',
+  FAILURE: 'failure',
+  CANCELLED: 'cancelled',
+  SKIPPED: 'skipped',
+  ACTION_REQUIRED: 'action_required',
+  UNKNOWN: 'unknown',
+});
+
+function statusHead(ariaLabel) {
+  const raw = String(ariaLabel || '').trim();
+  const head = raw.includes(':') ? raw.slice(0, raw.indexOf(':')) : raw;
+  return head.trim().toLowerCase();
+}
+
+function normalizeStatus(ariaLabel) {
+  const s = statusHead(ariaLabel);
+  if (s === 'queued' || s.startsWith('queued')) return Status.QUEUED;
+  if (s === 'currently running') return Status.RUNNING;
+  if (s === 'completed successfully') return Status.SUCCESS;
+  if (s === 'failed') return Status.FAILURE;
+  if (s.includes('cancelled') || s.includes('canceled')) return Status.CANCELLED;
+  if (s === 'skipped') return Status.SKIPPED;
+  if (s.includes('requires action')) return Status.ACTION_REQUIRED;
+  console.error('Unrecognized Actions status aria-label:', ariaLabel);
+  return Status.UNKNOWN;
+}
+
 async function buildState(url) {
   try {
     const resp = await got(url);
     const dom = new JSDOM(resp.body);
-    const currentBuildElm = dom.window.document.querySelector("[id^='check_suite_']");
-    const currentBuild = currentBuildElm.id;
-    const currentStatus = currentBuildElm.querySelector('svg').getAttribute('aria-label');
-    const gitLog = currentBuildElm.querySelector('span.Link--primary').textContent.trim();
-    return new BuildState(currentBuild, currentStatus, gitLog);
+    const row = dom.window.document.querySelector("[id^='check_suite_']");
+    if (!row) return null;
+    const svg = row.querySelector('svg[aria-label]');
+    const title = row.querySelector('span.Link--primary');
+    const aria = svg && svg.getAttribute('aria-label');
+    if (!svg || !aria || !title) return null;
+    return new BuildState(row.id, normalizeStatus(aria), title.textContent.trim());
   } catch (err) {
     console.error(err);
+    return null;
   }
 }
 
@@ -89,7 +122,7 @@ class BuildState {
         dictionary.translate(this.status)
       );
     }
-    if (this.status !== 'queued: ' && this.status != previousState.status) {
+    if (this.status !== Status.QUEUED && this.status != previousState.status) {
       return (
         dictionary.translate('the_build') + dictionary.translate(this.status)
       );
@@ -99,10 +132,13 @@ class BuildState {
 
   colorCode() {
     return {
-      'queued: ': BgBlue + FgYellow + Blink,
-      'currently running: ': BgBlue + FgYellow + Blink,
-      'completed successfully: ': BgGreen + FgBlack,
-      'failed: ': BgRed + FgYellow + Blink,
+      [Status.QUEUED]: BgBlue + FgYellow + Blink,
+      [Status.RUNNING]: BgBlue + FgYellow + Blink,
+      [Status.SUCCESS]: BgGreen + FgBlack,
+      [Status.FAILURE]: BgRed + FgYellow + Blink,
+      [Status.CANCELLED]: BgYellow + FgBlack,
+      [Status.SKIPPED]: Dim,
+      [Status.ACTION_REQUIRED]: BgYellow + FgBlack + Blink,
     }[this.status];
   }
 }
@@ -113,7 +149,14 @@ const englishDictionary = {
       {
         new_build: 'A new build ',
         the_build: 'The build',
-      }[phrase] || ` ${phrase}`
+        [Status.QUEUED]: ' has been queued.',
+        [Status.RUNNING]: ' is currently running.',
+        [Status.SUCCESS]: ' completed successfully.',
+        [Status.FAILURE]: ' failed.',
+        [Status.CANCELLED]: ' was cancelled.',
+        [Status.SKIPPED]: ' was skipped.',
+        [Status.ACTION_REQUIRED]: ' requires action.',
+      }[phrase] || ''
     );
   },
 };
@@ -160,6 +203,7 @@ const mostRecentUpdate = MostRecentUpdate();
 const actionSoundJob = () => {
   buildState(githubActionURL).then(
     (newState) => {
+      if (newState == null) return;
       const toSay = mostRecentUpdate(newState);
       say(toSay.statement, toSay.colorCode);
     }
@@ -175,5 +219,7 @@ module.exports = {
   englishDictionary,
   MostRecentUpdate,
   timer,
+  Status,
+  normalizeStatus,
 };
 
