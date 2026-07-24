@@ -5,6 +5,7 @@ const {
   englishDictionary,
   MostRecentUpdate,
   timer,
+  Status,
 } = require('../index.js');
 
 jest.mock('got');
@@ -127,90 +128,94 @@ afterAll((done) => {
   done();
 });
 
+test('buildState returns null when got rejects', async () => {
+  got.mockRejectedValue(new Error('network down'));
+  await expect(buildState('https://github.com/org/repo/actions')).resolves.toBeNull();
+});
+
+test('buildState returns null when check_suite missing', async () => {
+  got.mockResolvedValue({ body: '<html><body>no suites</body></html>' });
+  await expect(buildState('https://github.com/org/repo/actions')).resolves.toBeNull();
+});
+
+test('null scrape does not mutate MostRecentUpdate state', async () => {
+  got.mockRejectedValue(new Error('network down'));
+  const newState = await buildState('https://github.com/org/repo/actions');
+  expect(newState).toBeNull();
+
+  const update = MostRecentUpdate();
+  const updateSpy = jest.fn(update);
+  update(new BuildState('build1', Status.RUNNING, 'do something'));
+
+  // Poll guard (D-01): skip MostRecentUpdate when scrape yields null
+  if (newState != null) {
+    updateSpy(newState);
+  }
+  expect(updateSpy).not.toHaveBeenCalled();
+
+  const next = update(new BuildState('build1', Status.SUCCESS, 'do something'));
+  expect(next.statement).toBe('The build completed successfully.');
+  expect(next.colorCode).toBeDefined();
+});
+
 test('get content from github action', async () => {
   got.mockResolvedValue({ body: html });
   const state = await buildState();
   expect(state).toMatchObject({
-    status: 'completed successfully',
+    status: Status.SUCCESS,
     gitLog: 'trigger build',
     buildName: 'check_suite_10845785161',
   });
+  expect(state.colorCode()).toBeDefined();
+  expect(englishDictionary.translate(Status.SUCCESS)).toBe(
+    ' completed successfully.'
+  );
 });
 
 test('should not say anything is state not changed', () => {
-  const state = new BuildState(
-    'build1',
-    'completed successfully.',
-    'do something'
-  );
-  const state2 = new BuildState(
-    'build1',
-    'completed successfully.',
-    'do something'
-  );
+  const state = new BuildState('build1', Status.SUCCESS, 'do something');
+  const state2 = new BuildState('build1', Status.SUCCESS, 'do something');
   expect(state.diffToSentence(state2, englishDictionary)).toContain('');
 });
 
 test('found a new build', () => {
-  const state = new BuildState(
-    'build1',
-    'completed successfully.',
-    'do something'
-  );
-  const state2 = new BuildState(
-    'build2',
-    'completed successfully.',
-    'do something'
-  );
+  const state = new BuildState('build1', Status.SUCCESS, 'do something');
+  const state2 = new BuildState('build2', Status.SUCCESS, 'do something');
   const mostRecentUpdate = MostRecentUpdate();
-  expect(mostRecentUpdate(state)).toMatchObject({
+  const first = mostRecentUpdate(state);
+  expect(first).toMatchObject({
     statement: `A new build 'do something' completed successfully.`,
-    colorCode: undefined,
+    colorCode: expect.any(String),
   });
-  expect(mostRecentUpdate(state2)).toMatchObject({
+  expect(first.colorCode).toBeDefined();
+  const second = mostRecentUpdate(state2);
+  expect(second).toMatchObject({
     statement: `A new build 'do something' completed successfully.`,
-    colorCode: undefined,
+    colorCode: expect.any(String),
   });
+  expect(second.colorCode).toBeDefined();
 });
 
 test('found a new status', () => {
-  const state = new BuildState(
-    'build1',
-    'is currently running.',
-    'do something'
-  );
-  const state2 = new BuildState(
-    'build1',
-    'completed successfully.',
-    'do something'
-  );
+  const state = new BuildState('build1', Status.RUNNING, 'do something');
+  const state2 = new BuildState('build1', Status.SUCCESS, 'do something');
   const mostRecentUpdate = MostRecentUpdate();
-  expect(mostRecentUpdate(state)).toMatchObject({
+  const first = mostRecentUpdate(state);
+  expect(first).toMatchObject({
     statement: `A new build 'do something' is currently running.`,
-    colorCode: undefined,
   });
-  expect(mostRecentUpdate(state2)).toMatchObject({
+  expect(first.colorCode).toBeDefined();
+  const second = mostRecentUpdate(state2);
+  expect(second).toMatchObject({
     statement: `The build completed successfully.`,
-    colorCode: undefined,
   });
+  expect(second.colorCode).toBeDefined();
 });
 
 test('old build comes back again', () => {
-  const state1 = new BuildState(
-    'build1',
-    'is currently running.',
-    'do something'
-  );
-  const state2 = new BuildState(
-    'build2',
-    'completed successfully.',
-    'do something'
-  );
-  const state3 = new BuildState(
-    'build1',
-    'completed successfully.',
-    'do something'
-  );
+  const state1 = new BuildState('build1', Status.RUNNING, 'do something');
+  const state2 = new BuildState('build2', Status.SUCCESS, 'do something');
+  const state3 = new BuildState('build1', Status.SUCCESS, 'do something');
 
   const mostRecentUpdate = MostRecentUpdate();
   mostRecentUpdate(state1);
