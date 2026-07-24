@@ -22,8 +22,8 @@ See: .planning/PROJECT.md (updated 2026-07-24)
 
 Phase: 1 of 3 (Crash Guard + Status Normalization)
 Plan: — of — in current phase
-Status: Context gathered — ready to plan
-Last activity: 2026-07-24 — Phase 1 CONTEXT.md written (--auto discuss)
+Status: Research complete — ready to plan
+Last activity: 2026-07-24 — Phase 1 RESEARCH.md written (crash guard + status normalization)
 
 Progress: [░░░░░░░░░░] 0%
 
@@ -63,7 +63,8 @@ None yet.
 
 ### Blockers/Concerns
 
-- Phase 2 planning should recapture live Actions HTML fixtures (aria-label / selectors may drift)
+- Live aria-labels use `STATUS_PREFIX:  Run N of …` (verified 2026-07-24); Phase 1 fixtures must cover that shape
+- Queued/cancelled exact live prefixes still weakly sampled — fixture-lock `queued` / `cancelled` heads
 - Phase 2 store rules need an absence policy when a tracked suite vanishes without a terminal scrape
 
 ## Deferred Items
@@ -77,5 +78,5 @@ Items acknowledged and carried forward from previous milestone close:
 ## Session Continuity
 
 Last session: 2026-07-24
-Stopped at: Roadmap created — Phase 1 ready to plan
+Stopped at: Phase 1 research complete — ready for `/gsd-plan-phase` planner
 Resume file: None
