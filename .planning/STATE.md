@@ -4,11 +4,11 @@ milestone: v1.0
 milestone_name: milestone
 current_phase: 3
 current_phase_name: Modular Cleanup + Tech Debt
-status: planned
-stopped_at: Completed 03-02-PLAN.md
-last_updated: "2026-07-24T09:40:15.026Z"
+status: human_needed
+stopped_at: Phase 3 executed — live macOS smoke pending
+last_updated: "2026-07-24T09:42:31.980Z"
 last_activity: 2026-07-24
-last_activity_desc: Phase 3 planned
+last_activity_desc: Phase 3 verification completed with human check pending
 progress:
   total_phases: 3
   completed_phases: 0
@@ -23,14 +23,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-07-24)
 
 **Core value:** When several workflows are in flight, every queued/running build’s meaningful status changes are announced — nothing important is silently dropped because only the top DOM row was watched.
-**Current focus:** Phase 3: Modular Cleanup + Tech Debt (planned — ready to execute)
+**Current focus:** Phase 3: Modular Cleanup + Tech Debt (awaiting live macOS CLI smoke)
 
 ## Current Position
 
-Phase: 3 of 3 (Modular Cleanup + Tech Debt) — PLANNED
+Phase: 3 of 3 (Modular Cleanup + Tech Debt) — HUMAN VERIFICATION NEEDED
 Plan: 2 of 2 executed
-Status: SAFE-01, SAFE-02, STRUCT-01 planned in 2 waves
-Last activity: 2026-07-24 — Phase 3 planned
+Status: SAFE-01, SAFE-02, STRUCT-01 automated checks verified; live CLI smoke pending
+Last activity: 2026-07-24 — Phase 3 verification completed with human check pending
 
 Progress: [███████░░░] 67%
 
@@ -114,6 +114,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-07-24T09:40:15.020Z
-Stopped at: Completed 03-02-PLAN.md
-Resume file: None
+Last session: 2026-07-24T09:42:31.971Z
+Stopped at: Phase 3 executed — live macOS smoke pending
+Resume file: .planning/phases/03-modular-cleanup-tech-debt/03-VERIFICATION.md
