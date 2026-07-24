@@ -14,7 +14,7 @@ Harden the existing macOS Actions poller so scrape failures and live status labe
 Decimal phases appear between their surrounding integers in numeric order.
 
 - [ ] **Phase 1: Crash Guard + Status Normalization** - Safe poll ticks and a single status enum for color, speech, and lifecycle
-- [ ] **Phase 2: Multi-Build Tracking + Fan-out** - Track all in-flight suites and announce every meaningful change
+- [x] **Phase 2: Multi-Build Tracking + Fan-out** - Track all in-flight suites and announce every meaningful change (completed 2026-07-24)
 - [ ] **Phase 3: Modular Cleanup + Tech Debt** - Safe `say`, no import-side-effect poller, clear module boundaries
 
 ## Phase Details
@@ -41,7 +41,7 @@ Plans:
 
 ### Phase 2: Multi-Build Tracking + Fan-out
 
-**Goal:** With several workflows in flight, the developer hears each queued/running build’s meaningful status changes (identified by commit/run title), including when multiple change in one poll — then tracking drops after terminal announce.
+**Goal:** As a developer with several GitHub Actions workflows in flight, I want to hear every meaningful per-build status change identified by its run title (including when multiple change in one poll), so that a non-top-row failure or completion is never silently missed and tracking drops after terminal announce.
 **Mode:** mvp
 **Depends on:** Phase 1
 **Requirements:** MULTI-01, MULTI-02, MULTI-03, MULTI-04, MULTI-05, MULTI-06
@@ -53,7 +53,7 @@ Plans:
   4. When multiple in-flight builds change in one poll, each change is announced (overlapping `say` allowed; no single summary coalescing)
   5. A previously completed suite id can be tracked again if it reappears as queued/running (no forever blacklist)
 
-**Plans:** 2/2 plans executed
+**Plans:** 2/2 plans complete
 
 Plans:
 
@@ -73,7 +73,7 @@ Plans:
   3. Scrape, status normalization, in-flight store, and announce responsibilities are split out of the single monolith into clear modules
   4. Public CLI usage `github_action_sound <actions-url>` still works with Phase 2 behavior intact
 
-**Plans:** TBD
+**Plans:** 2/2 plans executed
 
 Plans:
 
@@ -87,7 +87,7 @@ Phases execute in numeric order: 1 → 2 → 3
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Crash Guard + Status Normalization | 2/2 | In Progress|  |
-| 2. Multi-Build Tracking + Fan-out | 2/2 | In Progress|  |
+| 2. Multi-Build Tracking + Fan-out | 2/2 | Complete   | 2026-07-24 |
 | 3. Modular Cleanup + Tech Debt | 0/TBD | Not started | - |
 
 ---

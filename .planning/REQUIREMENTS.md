@@ -16,10 +16,10 @@ Requirements for this milestone. Each maps to roadmap phases.
 
 ### Concurrent Tracking
 
-- [ ] **MULTI-01**: Each poll scrapes **all** check-suite rows on the Actions page (not only the first match)
+- [x] **MULTI-01**: Each poll scrapes **all** check-suite rows on the Actions page (not only the first match)
 - [x] **MULTI-02**: The monitor tracks every build that is queued or currently running (in-flight), keyed by check-suite id
 - [x] **MULTI-03**: When an in-flight build’s status changes, the tool announces that transition (stderr + `say`) identified by commit/run title
-- [ ] **MULTI-04**: When multiple in-flight builds change in one poll, each change is announced (overlapping `say` allowed; no coalescing into one summary)
+- [x] **MULTI-04**: When multiple in-flight builds change in one poll, each change is announced (overlapping `say` allowed; no coalescing into one summary)
 - [x] **MULTI-05**: After a tracked build reaches a terminal status and is announced, it is dropped from tracking (in-flight only; no historical re-announce storm)
 - [x] **MULTI-06**: A previously completed suite id may be tracked again if it reappears as queued/running (no forever blacklist)
 
@@ -81,10 +81,10 @@ Which phases cover which requirements. Updated during roadmap creation.
 | REL-02 | Phase 1 | Complete |
 | REL-03 | Phase 1 | Complete |
 | REL-04 | Phase 1 | Complete |
-| MULTI-01 | Phase 2 | Pending |
+| MULTI-01 | Phase 2 | Complete |
 | MULTI-02 | Phase 2 | Complete |
 | MULTI-03 | Phase 2 | Complete |
-| MULTI-04 | Phase 2 | Pending |
+| MULTI-04 | Phase 2 | Complete |
 | MULTI-05 | Phase 2 | Complete |
 | MULTI-06 | Phase 2 | Complete |
 | SAFE-01 | Phase 3 | Pending |
@@ -99,4 +99,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-07-24*
-*Last updated: 2026-07-24 after roadmap creation*
+*Last updated: 2026-07-24 after Phase 2 verification*
