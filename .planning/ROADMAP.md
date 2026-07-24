@@ -19,7 +19,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 ## Phase Details
 
 ### Phase 1: Crash Guard + Status Normalization
-**Goal:** A bad poll or mismatched GitHub label no longer crashes the monitor or produces undefined colors/speech — statuses normalize to one enum before anything else relies on them.
+**Goal:** As a developer watching GitHub Actions, I want bad polls and live status labels to stay crash-safe and enum-normalized, so that colors and speech stay defined without wiping prior state.
 **Mode:** mvp
 **Depends on:** Nothing (first phase)
 **Requirements:** REL-01, REL-02, REL-03, REL-04
@@ -28,10 +28,11 @@ Decimal phases appear between their surrounding integers in numeric order.
   2. Live-shaped SVG `aria-label` values map to a closed status enum used for color, speech phrasing, and later lifecycle predicates
   3. Colored stderr and spoken phrases reflect that enum (no `undefined` color/phrase for known live labels)
   4. Unit tests assert against the normalized enum / live fixture labels rather than synthetic dotted status strings
-**Plans:** TBD
+**Plans:** 2 plans
 
 Plans:
-- [ ] 01-01: TBD (defined during planning)
+- [ ] 01-01-PLAN.md — Tracer: null-safe scrape + Status enum through success color/speech
+- [ ] 01-02-PLAN.md — Full status mapping, unknown skip, live-shaped fixtures (REL-02/03/04)
 
 ### Phase 2: Multi-Build Tracking + Fan-out
 **Goal:** With several workflows in flight, the developer hears each queued/running build’s meaningful status changes (identified by commit/run title), including when multiple change in one poll — then tracking drops after terminal announce.
@@ -71,7 +72,7 @@ Phases execute in numeric order: 1 → 2 → 3
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Crash Guard + Status Normalization | 0/TBD | Not started | - |
+| 1. Crash Guard + Status Normalization | 0/2 | Planned | - |
 | 2. Multi-Build Tracking + Fan-out | 0/TBD | Not started | - |
 | 3. Modular Cleanup + Tech Debt | 0/TBD | Not started | - |
 
