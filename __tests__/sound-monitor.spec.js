@@ -12,6 +12,9 @@ const {
   Status,
   normalizeStatus,
 } = require('../index.js');
+const status = require('../status.js');
+const scrape = require('../scrape.js');
+const store = require('../store.js');
 
 jest.mock('got');
 jest.mock('child_process', () => ({
@@ -729,5 +732,22 @@ describe('safe CLI-to-speech boundary (03-01)', () => {
     expect(fs.readFileSync(cliPath, 'utf8').split('\n')[0]).toBe(
       '#!/usr/bin/env node'
     );
+  });
+});
+
+describe('extracted module boundaries (03-02)', () => {
+  test('direct modules and the public barrel share the established APIs', () => {
+    expect(scrape.buildStates).toBe(buildStates);
+    expect(status.BuildState).toBe(BuildState);
+    expect(status.Status).toBe(Status);
+    expect(status.normalizeStatus).toBe(normalizeStatus);
+    expect(status.englishDictionary).toBe(englishDictionary);
+    expect(store.InFlightBuildStore).toBe(InFlightBuildStore);
+    expect(store.isInFlight(Status.RUNNING)).toBe(true);
+    expect(store.isTerminal(Status.SUCCESS)).toBe(true);
+  });
+
+  test('status module exports only the wired English dictionary', () => {
+    expect(status).not.toHaveProperty('japaneseDictionary');
   });
 });
