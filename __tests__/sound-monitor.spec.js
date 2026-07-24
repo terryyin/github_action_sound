@@ -6,6 +6,7 @@ const {
   MostRecentUpdate,
   timer,
   Status,
+  normalizeStatus,
 } = require('../index.js');
 
 jest.mock('got');
@@ -223,5 +224,79 @@ test('old build comes back again', () => {
   expect(mostRecentUpdate(state3)).toMatchObject({
     statement: ``,
     colorCode: undefined,
+  });
+});
+
+describe('normalizeStatus full mapping (01-02)', () => {
+  const cases = [
+    ['queued', Status.QUEUED],
+    ['queued:  Run 1 of CI. title', Status.QUEUED],
+    ['currently running', Status.RUNNING],
+    ['currently running:  Run 1 of CI. title', Status.RUNNING],
+    ['completed successfully', Status.SUCCESS],
+    ['completed successfully:  Run 1 of CI. title', Status.SUCCESS],
+    ['failed', Status.FAILURE],
+    ['failed:  Run 1 of CI. title', Status.FAILURE],
+    ['skipped', Status.SKIPPED],
+    ['skipped:  Run 1 of CI. title', Status.SKIPPED],
+    ['cancelled', Status.CANCELLED],
+    ['canceled', Status.CANCELLED],
+    ['cancelled:  Run 1 of CI. title', Status.CANCELLED],
+    ['requires action with the application', Status.ACTION_REQUIRED],
+    ['requires action with the application:  Run 1 of CI. title', Status.ACTION_REQUIRED],
+  ];
+
+  test.each(cases)('maps %s → %s', (label, expected) => {
+    expect(normalizeStatus(label)).toBe(expected);
+  });
+
+  test('unrecognized label → unknown without throwing', () => {
+    const err = jest.spyOn(console, 'error').mockImplementation(() => {});
+    expect(normalizeStatus('totally weird status')).toBe(Status.UNKNOWN);
+    expect(err).toHaveBeenCalled();
+    err.mockRestore();
+  });
+});
+
+describe('enum-only colors and phrases (01-02)', () => {
+  const known = [
+    Status.QUEUED,
+    Status.RUNNING,
+    Status.SUCCESS,
+    Status.FAILURE,
+    Status.CANCELLED,
+    Status.SKIPPED,
+    Status.ACTION_REQUIRED,
+  ];
+
+  test.each(known)('colorCode defined for %s', (status) => {
+    expect(new BuildState('b', status, 'log').colorCode()).toBeDefined();
+  });
+
+  test.each(known)('english phrase defined for %s', (status) => {
+    expect(englishDictionary.translate(status)).not.toBe('');
+  });
+
+  test('unknown has no color and no speech phrase', () => {
+    expect(new BuildState('b', Status.UNKNOWN, 'log').colorCode()).toBeUndefined();
+    expect(englishDictionary.translate(Status.UNKNOWN)).toBe('');
+  });
+
+  test('unknown status yields empty statement (no invented speech)', () => {
+    const prev = new BuildState('b', Status.RUNNING, 'log');
+    const next = new BuildState('b', Status.UNKNOWN, 'log');
+    expect(next.diffToSentence(prev, englishDictionary)).toBe('');
+
+    const fresh = new BuildState('new', Status.UNKNOWN, 'log');
+    expect(fresh.diffToSentence(new BuildState('', ''), englishDictionary)).toBe('');
+  });
+
+  test('unknown→unknown via MostRecentUpdate does not throw and stays silent', () => {
+    const update = MostRecentUpdate();
+    const first = update(new BuildState('b1', Status.UNKNOWN, 'log'));
+    expect(first.statement).toBe('');
+    expect(first.colorCode).toBeUndefined();
+    const second = update(new BuildState('b1', Status.UNKNOWN, 'log'));
+    expect(second.statement).toBe('');
   });
 });
