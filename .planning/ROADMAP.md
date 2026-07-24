@@ -62,7 +62,7 @@ Plans:
 
 ### Phase 3: Modular Cleanup + Tech Debt
 
-**Goal:** After multi-build behavior is proven, scraped titles cannot hit a shell, requiring library code does not start the live poller, and scrape/status/store/announce live in clear modules.
+**Goal:** As a developer watching GitHub Actions, I want speech hardened against shell injection, library requires that do not start the poller, and scrape/status/store/announce split into clear modules, so that multi-build monitoring stays safe and maintainable without changing announce behavior.
 **Mode:** mvp
 **Depends on:** Phase 2
 **Requirements:** SAFE-01, SAFE-02, STRUCT-01
