@@ -2,14 +2,15 @@
 phase: 2
 slug: multi-build-tracking-fan-out
 status: draft
-nyquist_compliant: false
-wave_0_complete: false
+nyquist_compliant: true
+wave_0_complete: true
 created: 2026-07-24
 ---
 
 # Phase 2 — Validation Strategy
 
 > Per-phase validation contract for feedback sampling during execution.
+> Wave 0 fixture/lifecycle coverage is embedded TDD-first inside implementation tasks (no separate Wave 0 plan).
 
 ---
 
@@ -27,7 +28,7 @@ created: 2026-07-24
 
 ## Sampling Rate
 
-- **After every task commit:** Run quick serial Jest command
+- **After every task commit:** Run that task’s `<automated>` command
 - **After every plan wave:** Full suite must be green
 - **Before `/gsd-verify-work`:** Full suite green + optional macOS dual-run smoke
 - **Max feedback latency:** 30 seconds
@@ -38,22 +39,21 @@ created: 2026-07-24
 
 | Task ID | Plan | Wave | Requirement | Threat Ref | Secure Behavior | Test Type | Automated Command | File Exists | Status |
 |---------|------|------|-------------|------------|-----------------|-----------|-------------------|-------------|--------|
-| 02-01-01 | 01 | 1 | MULTI-01 | T-02-01 | Title never used as Map key | integration | serial Jest | ⚠️ extend W0 | ⬜ pending |
-| 02-01-02 | 01 | 1 | MULTI-02, MULTI-04 | T-02-02 | null scrape preserves Map | unit/integration | serial Jest | ⚠️ extend W0 | ⬜ pending |
-| 02-02-01 | 02 | 2 | MULTI-03, MULTI-05 | T-02-02 | absence ≠ terminal delete | unit | serial Jest | ⚠️ after 01 | ⬜ pending |
-| 02-02-02 | 02 | 2 | MULTI-06 | — | no forever blacklist | unit | serial Jest | ⚠️ after 01 | ⬜ pending |
+| 02-01-01 | 01 | 1 | MULTI-01..04 | T-02-01, T-02-04 | Map keyed by suite id (never title) | integration | `jest --runInBand --testNamePattern="two-suite fan-out: scrape → Map → ordered announce"` | ❌ created in task (TDD) | ⬜ pending |
+| 02-01-02 | 01 | 1 | MULTI-01; D-02 | T-02-02 | null / all-malformed scrape no-op; no store mutation | unit/integration | `jest --runInBand` | ❌ created in task (TDD) | ⬜ pending |
+| 02-02-01 | 02 | 2 | MULTI-05/06; D-01/03/05 | T-02-05, T-02-06 | absence ≠ terminal; terminal announce then delete; re-admit | unit | `jest --runInBand --testNamePattern="terminal\|re-admit\|absence\|historical"` | ❌ created in task (TDD) | ⬜ pending |
+| 02-02-02 | 02 | 2 | D-06/07/09/10 | T-02-07, T-02-08 | action_required keep; unknown silent; title refresh; order | unit | `pnpm test` | ❌ created in task (TDD) | ⬜ pending |
 
-*Status: ⬜ pending · ✅ green · ❌ red · ⚠️ flaky — planner fills exact task IDs*
+*Status: ⬜ pending · ✅ green · ❌ red · ⚠️ flaky*
 
 ---
 
 ## Wave 0 Requirements
 
-- [ ] `__tests__/sound-monitor.spec.js` — compact multi-suite HTML/page factory (two concurrent in-flight rows)
-- [ ] Store lifecycle assertions: admit queued/running, terminal drop, re-admit, absent-id keep, action_required keep, unknown skip speech
-- [ ] Fan-out / ordered descriptors test without invoking real macOS `say` (mock announce boundary or assert returned descriptors)
+Existing Jest infrastructure covers the framework. Fixture helpers (`suiteRow` / `suitePage`), store lifecycle assertions, and fan-out tests are created **inside** plans 02-01 / 02-02 as TDD-first tasks — no separate Wave 0 plan or blocking dependency.
 
-*Existing Jest infrastructure covers the framework; Wave 0 is fixture + assertion extension.*
+- [x] Framework present (`jest.config.js`, `__tests__/sound-monitor.spec.js`)
+- [x] Wave 0 work folded into implementation task TDD (wave_0_complete: true)
 
 ---
 
@@ -63,17 +63,17 @@ created: 2026-07-24
 |----------|-------------|------------|-------------------|
 | Dual overlapping live runs | MULTI-03/04 | Needs busy public Actions URL + macOS `say` | Watch a public Actions URL with ≥2 overlapping runs; hear distinct title-identified announcements |
 
-*Core MULTI behaviors have automated verification via fixtures.*
+*Core MULTI behaviors have automated verification via fixtures. Manual smoke is optional end-of-phase.*
 
 ---
 
 ## Validation Sign-Off
 
-- [ ] All tasks have `<automated>` verify or Wave 0 dependencies
-- [ ] Sampling continuity: no 3 consecutive tasks without automated verify
-- [ ] Wave 0 covers all MISSING references
-- [ ] No watch-mode flags
-- [ ] Feedback latency < 30s
-- [ ] `nyquist_compliant: true` set in frontmatter
+- [x] All tasks have `<automated>` verify (no MISSING refs; Wave 0 folded into TDD tasks)
+- [x] Sampling continuity: no 3 consecutive tasks without automated verify
+- [x] Wave 0 covered by existing Jest + in-task fixture creation
+- [x] No watch-mode flags
+- [x] Feedback latency < 30s
+- [x] `nyquist_compliant: true` set in frontmatter
 
-**Approval:** pending
+**Approval:** approved 2026-07-24 (orchestrator after plan-check blockers fixed)

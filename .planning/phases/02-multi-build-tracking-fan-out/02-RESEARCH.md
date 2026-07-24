@@ -333,15 +333,15 @@ Jest supports awaited async tests and mocked modules; each store test should cre
 | A1 | A minimal `pollInFlight` guard can be added without crossing Phase 3’s poller-extraction boundary. | Common Pitfalls | Low; omit it if it complicates the tracer. |
 | A2 | GitHub’s current page continues exposing check suites through the existing id/SVG/title selector trio. | Architecture Patterns | Medium; fixtures catch local regressions but not a live GitHub redesign. |
 
-## Open Questions
+## Open Questions (RESOLVED)
 
 1. **Should the optional single-flight guard ship in the tracer?**
-   - What we know: overlapping async interval ticks can race on shared Map state; it is not a MULTI acceptance requirement.
-   - Recommendation: add only a small boolean skip guard if it is isolated and testable; otherwise record it for Phase 3 exactly as deferred.
+   - **Resolved (2026-07-24):** **No** — omit the poll single-flight / `pollInFlight` guard in Phase 2. Overlapping ticks remain deferred hardening (Phase 3 / later); MULTI acceptance does not require it and CONTEXT Claude's Discretion allows omission.
+   - Plans: `02-01` / `02-02` explicitly forbid adding a poll mutex.
 
 2. **How should a successful page with only malformed suite rows be classified?**
-   - What we know: malformed individual rows must be skipped, while empty/failed scrapes preserve state.
-   - Recommendation: return the valid-row list when at least one row is valid; treat an all-malformed result as `null`/no-op so it cannot imply all tracked suites vanished.
+   - **Resolved (2026-07-24):** Return the valid-row list when ≥1 row is valid; treat an **all-malformed** result as `null` (same as empty/failed scrape) so the store is not mutated and absence cannot be inferred. Individual malformed siblings are skipped while valid siblings remain.
+   - Plans: `02-01` Task 2 locks this classification.
 
 ## Environment Availability
 
