@@ -5,15 +5,15 @@ milestone_name: milestone
 current_phase: 2
 current_phase_name: Multi-Build Tracking + Fan-out
 status: planned
-stopped_at: Completed 02-01-PLAN.md
-last_updated: "2026-07-24T08:54:45.375Z"
+stopped_at: Completed 02-02-PLAN.md
+last_updated: "2026-07-24T08:57:13.141Z"
 last_activity: 2026-07-24
 last_activity_desc: Plans 02-01 and 02-02 created with tracer-first wave structure
 progress:
   total_phases: 2
   completed_phases: 0
   total_plans: 6
-  completed_plans: 3
+  completed_plans: 4
 ---
 
 # Project State
@@ -28,11 +28,11 @@ See: .planning/PROJECT.md (updated 2026-07-24)
 ## Current Position
 
 Phase: 2 of 3 (Multi-Build Tracking + Fan-out) — PLANNED
-Plan: 1 of 2 executed
+Plan: 2 of 2 executed
 Status: Phase 2 plans created — ready for execution
 Last activity: 2026-07-24 — Plans 02-01 and 02-02 created with tracer-first wave structure
 
-Progress: [█████░░░░░] 50%
+Progress: [███████░░░] 67%
 
 ## Performance Metrics
 
@@ -61,6 +61,7 @@ Progress: [█████░░░░░] 50%
 | Phase 01 P01 | 4min | 2 tasks | 2 files |
 | Phase 01 P02 | 15min | 2 tasks | 2 files |
 | Phase 02 P01 | 2 min | 2 tasks | 2 files |
+| Phase 02 P02 | 1 min | 2 tasks | 1 files |
 
 ## Accumulated Context
 
@@ -82,6 +83,9 @@ Recent decisions affecting current work:
 - [Phase 2]: action_required remains tracked after announce; unknown remains tracked and silent; titles refresh every successful observation
 - [Phase ?]: Use check-suite DOM ids as the only Map identity; titles are display-only.
 - [Phase ?]: Treat null, empty, and all-malformed scrapes as no-ops before store mutation.
+- [Phase ?]: Only observed terminal states retire tracked suites; absent rows remain stored.
+- [Phase ?]: Tracked action_required announces and remains stored; tracked unknown remains silent and stored.
+- [Phase ?]: Every observed tracked row refreshes its display title before a later transition.
 
 ### Pending Todos
 
@@ -103,6 +107,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-07-24T08:54:45.366Z
-Stopped at: Completed 02-01-PLAN.md
+Last session: 2026-07-24T08:57:13.135Z
+Stopped at: Completed 02-02-PLAN.md
 Resume file: None
