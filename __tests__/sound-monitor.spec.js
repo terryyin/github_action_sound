@@ -1,16 +1,20 @@
 const got = require('got');
+const { execFile } = require('child_process');
 const {
   buildStates,
   BuildState,
   englishDictionary,
   InFlightBuildStore,
   actionSoundJob,
-  timer,
+  say,
   Status,
   normalizeStatus,
 } = require('../index.js');
 
 jest.mock('got');
+jest.mock('child_process', () => ({
+  execFile: jest.fn(),
+}));
 
 function suiteRow({ id, ariaLabel, title }) {
   return `
@@ -137,11 +141,6 @@ const html = `
   </div>
 </div>
   `;
-
-afterAll((done) => {
-  clearInterval(timer);
-  done();
-});
 
 test('two-suite fan-out: scrape → Map → ordered announce', async () => {
   const url = 'https://github.com/org/repo/actions';
@@ -618,4 +617,73 @@ describe('attention, unknown, title refresh, and descriptor order (02-02)', () =
       );
     }
   );
+});
+
+describe('safe CLI-to-speech boundary (03-01)', () => {
+  afterEach(() => {
+    execFile.mockReset();
+  });
+
+  test('say sends hostile scraped text as one argv item', () => {
+    const sentence = 'quoted "title" $(whoami); next\nline';
+    const error = jest.spyOn(console, 'error').mockImplementation(() => {});
+
+    say(sentence, '');
+
+    expect(execFile).toHaveBeenCalledTimes(1);
+    expect(execFile).toHaveBeenCalledWith(
+      'say',
+      [sentence],
+      expect.any(Function)
+    );
+    error.mockRestore();
+  });
+
+  test('requiring the library starts no runtime side effects or timer export', () => {
+    jest.resetModules();
+    const setIntervalSpy = jest.spyOn(global, 'setInterval');
+
+    jest.isolateModules(() => {
+      const isolatedGot = require('got');
+      const { execFile: isolatedExecFile } = require('child_process');
+      isolatedGot.mockClear();
+      isolatedExecFile.mockClear();
+
+      const library = require('../index.js');
+
+      expect(library).not.toHaveProperty('timer');
+      expect(setIntervalSpy).not.toHaveBeenCalled();
+      expect(isolatedGot).not.toHaveBeenCalled();
+      expect(isolatedExecFile).not.toHaveBeenCalled();
+    });
+
+    setIntervalSpy.mockRestore();
+  });
+
+  test('cli owns argv, store construction, and the five-second poll interval', () => {
+    jest.resetModules();
+    const setIntervalSpy = jest
+      .spyOn(global, 'setInterval')
+      .mockImplementation(() => 1);
+    const actionSoundJob = jest.fn();
+    const InFlightBuildStore = jest.fn(() => ({ apply: jest.fn() }));
+    const cliSay = jest.fn();
+    const originalArgv = process.argv;
+    process.argv = ['node', 'cli.js', 'https://github.com/org/repo/actions'];
+
+    jest.doMock('../index.js', () => ({
+      actionSoundJob,
+      InFlightBuildStore,
+      say: cliSay,
+    }));
+
+    require('../cli.js');
+
+    expect(InFlightBuildStore).toHaveBeenCalledTimes(1);
+    expect(setIntervalSpy).toHaveBeenCalledWith(expect.any(Function), 5000);
+
+    setIntervalSpy.mockRestore();
+    process.argv = originalArgv;
+    jest.dontMock('../index.js');
+  });
 });
