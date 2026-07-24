@@ -499,3 +499,123 @@ describe('terminal retirement, re-admission, and absence retention (02-02)', () 
     expect(store.has('check_suite_retained')).toBe(true);
   });
 });
+
+describe('attention, unknown, title refresh, and descriptor order (02-02)', () => {
+  test('action_required is tracked-only, announces a transition, and stays tracked', () => {
+    const store = InFlightBuildStore();
+    const id = 'check_suite_attention';
+
+    expect(
+      store.apply([new BuildState(id, Status.ACTION_REQUIRED, 'first seen')])
+    ).toEqual([]);
+    expect(store.has(id)).toBe(false);
+
+    store.apply([new BuildState(id, Status.RUNNING, 'running title')]);
+    const announcements = store.apply([
+      new BuildState(id, Status.ACTION_REQUIRED, 'attention title'),
+    ]);
+
+    expect(announcements).toEqual([
+      expect.objectContaining({
+        statement: "The build 'attention title' requires action.",
+      }),
+    ]);
+    expect(store.get(id)).toEqual(
+      expect.objectContaining({
+        status: Status.ACTION_REQUIRED,
+        gitLog: 'attention title',
+      })
+    );
+  });
+
+  test('unknown is tracked-only, silent, and refreshes the stored snapshot', () => {
+    const store = InFlightBuildStore();
+    const id = 'check_suite_unknown';
+
+    expect(
+      store.apply([new BuildState(id, Status.UNKNOWN, 'first seen')])
+    ).toEqual([]);
+    expect(store.has(id)).toBe(false);
+
+    store.apply([new BuildState(id, Status.RUNNING, 'known title')]);
+    expect(
+      store.apply([new BuildState(id, Status.UNKNOWN, 'unknown title')])
+    ).toEqual([]);
+    expect(store.get(id)).toEqual(
+      expect.objectContaining({
+        status: Status.UNKNOWN,
+        gitLog: 'unknown title',
+      })
+    );
+  });
+
+  test('same-status observations refresh titles for later terminal output', () => {
+    const store = InFlightBuildStore();
+    const id = 'check_suite_title_refresh';
+
+    store.apply([new BuildState(id, Status.RUNNING, 'title A')]);
+    expect(
+      store.apply([new BuildState(id, Status.RUNNING, 'title B')])
+    ).toEqual([]);
+    expect(store.get(id).gitLog).toBe('title B');
+
+    expect(
+      store.apply([new BuildState(id, Status.SUCCESS, 'title B')])
+    ).toEqual([
+      expect.objectContaining({
+        statement: "The build 'title B' completed successfully.",
+      }),
+    ]);
+  });
+
+  test.each([
+    [
+      ['check_suite_a', 'check_suite_b'],
+      ['check_suite_a', 'check_suite_b'],
+    ],
+    [
+      ['check_suite_b', 'check_suite_a'],
+      ['check_suite_b', 'check_suite_a'],
+    ],
+  ])(
+    'changed rows announce in input order %p',
+    async (inputOrder, expectedOrder) => {
+      const store = InFlightBuildStore();
+      const announce = jest.fn();
+      const url = 'https://github.com/org/repo/actions';
+      const initialRows = ['check_suite_a', 'check_suite_b'].map((id) =>
+        suiteRow({
+          id,
+          ariaLabel: `currently running: ${id}`,
+          title: id === 'check_suite_a' ? 'title A' : 'title B',
+        })
+      );
+      const changedRows = inputOrder.map((id) =>
+        suiteRow({
+          id,
+          ariaLabel: `failed: ${id}`,
+          title: id === 'check_suite_a' ? 'title A' : 'title B',
+        })
+      );
+
+      got.mockReset();
+      got
+        .mockResolvedValueOnce({ body: suitePage(...initialRows) })
+        .mockResolvedValueOnce({ body: suitePage(...changedRows) });
+      await actionSoundJob(url, announce, store);
+      announce.mockClear();
+      const announcements = await actionSoundJob(url, announce, store);
+
+      expect(announcements.map(({ statement }) => statement)).toEqual(
+        expectedOrder.map((id) =>
+          id === 'check_suite_a'
+            ? "The build 'title A' failed."
+            : "The build 'title B' failed."
+        )
+      );
+      expect(announce.mock.calls.map(([statement]) => statement)).toEqual(
+        announcements.map(({ statement }) => statement)
+      );
+    }
+  );
+});
