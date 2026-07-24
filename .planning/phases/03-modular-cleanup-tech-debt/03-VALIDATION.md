@@ -2,7 +2,7 @@
 phase: 3
 slug: modular-cleanup-tech-debt
 status: draft
-nyquist_compliant: false
+nyquist_compliant: true
 wave_0_complete: false
 created: 2026-07-24
 ---
@@ -38,13 +38,13 @@ created: 2026-07-24
 
 | Task ID | Plan | Wave | Requirement | Threat Ref | Secure Behavior | Test Type | Automated Command | File Exists | Status |
 |---------|------|------|-------------|------------|-----------------|-----------|-------------------|-------------|--------|
-| 03-*-* | TBD | TBD | SAFE-01 | T-shell | `execFile('say', [sentence])` never shell `exec` | unit | `nix --version >/dev/null && pnpm test --runInBand` | ❌ W0 | ⬜ pending |
-| 03-*-* | TBD | TBD | SAFE-02 | T-poller | Library require starts no interval/network | unit | `nix --version >/dev/null && pnpm test --runInBand` | ❌ W0 | ⬜ pending |
-| 03-*-* | TBD | TBD | STRUCT-01 | — | Phase 2 suite green through extracted modules | unit | `nix --version >/dev/null && pnpm test --runInBand` | ✅ | ⬜ pending |
+| 03-01-01 | 03-01 | 1 | SAFE-01, SAFE-02, STRUCT-01 | T-03-01, T-03-02 | Direct argv speech boundary; inert library import; executable-only CLI tracer | unit/integration | `nix shell nixpkgs#nodejs_24 nixpkgs#pnpm --command pnpm test --runInBand` | ❌ task creates | ⬜ pending |
+| 03-01-02 | 03-01 | 1 | SAFE-01, SAFE-02 | T-03-03, T-03-04 | Overlapping best-effort speech and locked package entry routing | unit/static | `nix shell nixpkgs#nodejs_24 nixpkgs#pnpm --command pnpm test --runInBand` | ❌ task creates | ⬜ pending |
+| 03-02-01 | 03-02 | 2 | SAFE-01, SAFE-02, STRUCT-01 | T-03-05…T-03-09 | Phase 2 matrix and safety boundaries stay green through four extracted modules | unit/integration | `nix shell nixpkgs#nodejs_24 nixpkgs#pnpm --command pnpm test --runInBand` | ✅ extend | ⬜ pending |
 
 *Status: ⬜ pending · ✅ green · ❌ red · ⚠️ flaky*
 
-Planner must replace TBD task IDs when plans are written.
+Task IDs map directly to the executable plans.
 
 ---
 
@@ -53,6 +53,8 @@ Planner must replace TBD task IDs when plans are written.
 - [ ] Extend `__tests__/sound-monitor.spec.js` — argv-form `execFile` assertion (SAFE-01)
 - [ ] Extend `__tests__/sound-monitor.spec.js` — import-side-effect / no-timer assertion (SAFE-02); remove `clearInterval(timer)` teardown
 - [ ] Package entry assertion or documented manual CLI smoke (`main`/`bin`/`scripts.sound`)
+
+These test-first gaps are assigned to Tasks 03-01-01 and 03-01-02; `wave_0_complete` remains false until execution creates them.
 
 ---
 
