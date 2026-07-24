@@ -77,25 +77,25 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| REL-01 | — | Pending |
-| REL-02 | — | Pending |
-| REL-03 | — | Pending |
-| REL-04 | — | Pending |
-| MULTI-01 | — | Pending |
-| MULTI-02 | — | Pending |
-| MULTI-03 | — | Pending |
-| MULTI-04 | — | Pending |
-| MULTI-05 | — | Pending |
-| MULTI-06 | — | Pending |
-| SAFE-01 | — | Pending |
-| SAFE-02 | — | Pending |
-| STRUCT-01 | — | Pending |
+| REL-01 | Phase 1 | Pending |
+| REL-02 | Phase 1 | Pending |
+| REL-03 | Phase 1 | Pending |
+| REL-04 | Phase 1 | Pending |
+| MULTI-01 | Phase 2 | Pending |
+| MULTI-02 | Phase 2 | Pending |
+| MULTI-03 | Phase 2 | Pending |
+| MULTI-04 | Phase 2 | Pending |
+| MULTI-05 | Phase 2 | Pending |
+| MULTI-06 | Phase 2 | Pending |
+| SAFE-01 | Phase 3 | Pending |
+| SAFE-02 | Phase 3 | Pending |
+| STRUCT-01 | Phase 3 | Pending |
 
 **Coverage:**
 - v1 requirements: 13 total
-- Mapped to phases: 0
-- Unmapped: 13 ⚠️
+- Mapped to phases: 13
+- Unmapped: 0 ✓
 
 ---
 *Requirements defined: 2026-07-24*
-*Last updated: 2026-07-24 after initial definition*
+*Last updated: 2026-07-24 after roadmap creation*
