@@ -422,3 +422,80 @@ describe('enum-only colors and phrases (01-02)', () => {
     expect(store.has('b1')).toBe(true);
   });
 });
+
+describe('terminal retirement, re-admission, and absence retention (02-02)', () => {
+  const terminalCases = [
+    [Status.SUCCESS, 'completed successfully.'],
+    [Status.FAILURE, 'failed.'],
+    [Status.CANCELLED, 'was cancelled.'],
+    [Status.SKIPPED, 'was skipped.'],
+  ];
+
+  test.each(terminalCases)(
+    'tracked running build announces %s once, then retires',
+    (terminalStatus, expectedPhrase) => {
+      const store = InFlightBuildStore();
+      const id = 'check_suite_terminal';
+
+      store.apply([new BuildState(id, Status.RUNNING, 'earlier title')]);
+      const announcements = store.apply([
+        new BuildState(id, terminalStatus, 'latest title'),
+      ]);
+
+      expect(announcements).toHaveLength(1);
+      expect(announcements[0].statement).toContain("'latest title'");
+      expect(announcements[0].statement).toContain(expectedPhrase);
+      expect(store.has(id)).toBe(false);
+    }
+  );
+
+  test('historical terminal rows stay silent and a retired id can re-admit', () => {
+    const store = InFlightBuildStore();
+    const id = 'check_suite_re_admit';
+
+    expect(
+      store.apply([new BuildState(id, Status.SUCCESS, 'historical title')])
+    ).toEqual([]);
+    expect(store.has(id)).toBe(false);
+
+    store.apply([new BuildState(id, Status.RUNNING, 'first run')]);
+    store.apply([new BuildState(id, Status.FAILURE, 'first run')]);
+    expect(store.has(id)).toBe(false);
+    expect(
+      store.apply([new BuildState(id, Status.FAILURE, 'historical again')])
+    ).toEqual([]);
+
+    const reAdmission = store.apply([
+      new BuildState(id, Status.QUEUED, 'rerun title'),
+    ]);
+    expect(reAdmission).toEqual([
+      expect.objectContaining({
+        statement: "A new build 'rerun title' has been queued.",
+      }),
+    ]);
+    expect(store.has(id)).toBe(true);
+  });
+
+  test('successful-snapshot absence leaves tracked builds untouched and silent', () => {
+    const store = InFlightBuildStore();
+    const retained = new BuildState(
+      'check_suite_retained',
+      Status.RUNNING,
+      'still running'
+    );
+    const observed = new BuildState(
+      'check_suite_observed',
+      Status.QUEUED,
+      'other suite'
+    );
+
+    store.apply([retained, observed]);
+    const announcements = store.apply([
+      new BuildState('check_suite_observed', Status.QUEUED, 'other suite'),
+    ]);
+
+    expect(announcements).toEqual([]);
+    expect(store.get('check_suite_retained')).toEqual(retained);
+    expect(store.has('check_suite_retained')).toBe(true);
+  });
+});
