@@ -271,17 +271,15 @@ setInterval(() => actionSoundJob(url, say, store), 5000);
 |---|-------|---------|---------------|
 | A1 | The published bin accepts `cli.js` through the existing npm packaging configuration without an additional file allowlist. | Architecture Patterns | The installed package could omit the CLI; verify with `npm pack --dry-run` if a package `files` field is later added. |
 
-## Open Questions
+## Open Questions (RESOLVED)
 
 1. **Should `actionSoundJob` remain a thin export in `index.js`?**
-   - What we know: Existing tests call it with injected `url`, `announce`, and `store`; D-05 allows thin orchestration helpers.
-   - What's unclear: Whether the planner prefers direct module composition in tests.
-   - Recommendation: Retain it in `index.js` as a pure, injected-dependency helper to minimize test churn; it must not create a timer or read argv.
+   - **RESOLVED:** Yes — keep `actionSoundJob(url, announce, store)` as a pure injected-dependency helper exported from `index.js` (D-05 / Claude's Discretion). It must not create a timer or read argv. Plan 03-01 implements this.
+   - Rationale: Minimizes test churn; existing suite already injects dependencies into `actionSoundJob`.
 
 2. **Should README wording change?**
-   - What we know: Public command name and argument shape remain unchanged.
-   - What's unclear: Whether documentation names `index.js` as the executable.
-   - Recommendation: Inspect README during planning; make only a one-line correction if it states the old file path.
+   - **RESOLVED:** No README change required.
+   - Evidence (2026-07-24): `README.md` only documents `github_action_sound <github action url>` and does not name `index.js` as the executable path. Public command/arg shape unchanged (D-04/D-05).
 
 ## Environment Availability
 
