@@ -109,7 +109,7 @@ Each task was committed atomically:
 1. **Task 1: Complete enum mapping, colors, phrases, unknown skip** - `fb6584a` (test RED) + `b0784e8` (feat GREEN)
 2. **Task 2: Live-shaped fixtures and full REL-04 enum assertions** - `3898393` (test)
 
-**Plan metadata:** (pending docs commit)
+**Plan metadata:** `1ffd1bf` (docs: complete plan)
 
 ## Files Created/Modified
 - `index.js` - `diffToSentence` skips unknown/missing-phrase announce (mapping/colors/phrases already complete from 01-01)
