@@ -1,12 +1,9 @@
 {
-  "$schema": "https://raw.githubusercontent.com/jetify-com/devbox/0.17.0/.schema/devbox.schema.json",
+  "$schema": "https://raw.githubusercontent.com/jetify-com/devbox/0.17.2/.schema/devbox.schema.json",
   "packages": [
     "pnpm@latest",
-    "nodejs@24.12.0"
+    "nodejs@25"
   ],
-  "env": {
-    "DEVBOX_COREPACK_ENABLED": "1"
-  },
   "shell": {
     "init_hook": [
       ". ./set-env.sh"

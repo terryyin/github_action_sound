@@ -4,8 +4,8 @@
   "description": " sound monitor for Github Action, watching and announcing build status.",
   "main": "index.js",
   "engines": {
-    "node": ">=24.12",
-    "pnpm": ">=10.31"
+    "node": ">=25",
+    "pnpm": ">=10.33"
   },
   "scripts": {
     "preinstall": "npx only-allow pnpm",
@@ -30,10 +30,10 @@
   "homepage": "https://github.com/terryyin/github_action_sound#readme",
   "devDependencies": {
     "@babel/core": "^7.29.0",
-    "@babel/preset-env": "^7.29.0",
-    "babel-jest": "^30.2.0",
-    "jest": "^30.2.0",
-    "syncpack": "14.2.0"
+    "@babel/preset-env": "^7.29.5",
+    "babel-jest": "^30.4.1",
+    "jest": "^30.4.2",
+    "syncpack": "15.1.2"
   },
   "bin": {
     "github_action_sound": "./cli.js"
@@ -42,5 +42,11 @@
     "got": "11.8.6",
     "jsdom": "26.1.0"
   },
-  "packageManager": "pnpm@10.31.0+sha512.e3927388bfaa8078ceb79b748ffc1e8274e84d75163e67bc22e06c0d3aed43dd153151cbf11d7f8301ff4acb98c68bdc5cadf6989532801ffafe3b3e4a63c268"
+  "pnpm": {
+    "overrides": {
+      "picomatch": ">=4.0.4",
+      "@babel/plugin-transform-modules-systemjs": ">=7.29.4"
+    }
+  },
+  "packageManager": "pnpm@10.33.4+sha512.1c67b3b359b2d408119ba1ed289f34b8fc3c6873412bec6fd264fbdc82489e510fcbecb9ce9d22dae7f3b76269d8441046014bdca53b9979cd7a561ad631b800"
 }

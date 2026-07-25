@@ -16,6 +16,5 @@ echo "                                                                          
 echo "###################################################################################################################"
 
 echo "Setting up PNPM..."
-corepack prepare pnpm@10.31.0 --activate
-corepack use pnpm@10.31.0
-pnpm --frozen-lockfile recursive install
+# Use pnpm from devbox (nix); avoid corepack — it is not on PATH for some Node nix outputs.
+pnpm install --frozen-lockfile
